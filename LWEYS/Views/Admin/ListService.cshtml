@@ -1,0 +1,171 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Loại dịch vụ";
+}
+@model ServiceModel
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions {
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+
+<button type="button" onclick="document.getElementById('formModal').reset();" class="btn btn-success" data-toggle="modal" data-target="#exampleModalService">
+    Tạo mới
+</button>
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3">Loại dịch vụ</h6>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tên</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Giá (VNĐ)</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Gói dịch vụ</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Kiểu dịch vụ</th>
+                                <th class="text-secondary opacity-7"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.ListService)
+                            {
+                                <tr>
+                                    <td>
+                                        <p class="mx-3 text-xs font-weight-bold mb-0">@item.Name</p>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">@item.Amount</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">@item.ServicePackage</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">@item.ServiceType</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <a href="javascript:;" onclick="showPopup(@item.Id)" class="text-secondary font-weight-bold text-xs" data-toggle="modal" data-target="#exampleModalService">
+                                            Sửa
+                                        </a>
+                                        <a href="javascript:;" onclick="deleteItem(@item.Id)" class="mx-3 text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit">
+                                            Xóa
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalService" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" id="formModal" method="post" asp-action="UpdateService">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Loại dịch vụ</h5>
+                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display:block" class="form-group input-group input-group-outline">
+                    <input type="number" asp-for="Id" id="service-id" hidden />
+                    <label for="Name">Tên</label>
+                    <input id="Name-id" style="width:100%" type="text" class="form-control" asp-for="Name" required placeholder="Tên">
+                </div>
+                <div style="display:block" class="form-group input-group input-group-outline">
+                    <label for="Description">Mô tả</label>
+                    <input id="Description-id" style="width:100%" type="text" asp-for="Description" class="form-control" placeholder="Mô tả">
+                </div>
+                <div style="display:block" class="form-group input-group input-group-outline">
+                    <label for="Amount">Giá</label>
+                    <input id="Amount-id" style="width:100%" type="number" asp-for="Amount" class="form-control" placeholder="Giá">
+                </div>
+                <div style="display:block" class="form-group input-group input-group-outline">
+                    <label>Gói dịch vụ</label>
+                    <select id="ServicePackageEnum-id" style="width:100%" asp-for="ServicePackageEnum" class="form-control">
+                        <option value="0">Gói cơ bản</option>
+                        <option value="1">Gói tiêu chuẩn</option>
+                        <option value="2">Gói cao cấp</option>
+                    </select>
+                </div>
+                <div style="display:block" class="form-group input-group input-group-outline">
+                    <label>Kiểu dịch vụ</label>
+                    <select id="ServiceTypeEnum-id" style="width:100%" asp-for="ServiceTypeEnum" class="form-control">
+                        <option value="0">Online</option>
+                        <option value="1">Offline</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    document.getElementById('ListServiceId').classList.add('active');
+
+    function showPopup(id){
+        $.ajax(
+            {
+                url: `/Admin/GetService?id=${id}`,
+                type: "GET",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                //data: formData,
+                //dataType: "json",
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    //console.log(data);
+                    $('#service-id').val(id);
+                    $('#Name-id').val(data.name);
+                    $('#Description-id').val(data.description);
+                    $('#Amount-id').val(data.amount);
+                    $('#ServiceTypeEnum-id').val(data.serviceTypeEnum);
+                    $('#ServicePackageEnum-id').val(data.servicePackageEnum);
+                }
+            }
+        );
+    }
+
+    function deleteItem(id) {
+        if (confirm("Bạn có muốn xóa ?") == false) return;
+        //var formData = new FormData();
+        $.ajax(
+            {
+                url: `/Admin/DeleteService?id=${id}`,
+                type: "GET",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                //data: formData,
+                //dataType: "json",
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    alert(data);
+                    window.location.reload();
+                }
+            }
+        );
+
+    }
+</script>

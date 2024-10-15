@@ -1,0 +1,252 @@
+﻿@{
+    ViewData["Title"] = "Lịch sử đặt dịch vụ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var index = 0;
+    // item1 >= 2 ? "fas checked" : "far")
+}
+@model List<ServiceOrderModel>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions {
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+<style>
+    label{
+        cursor:pointer;
+    }
+</style>
+<h3 class="title">Lịch sử đặt dịch vụ</h3>
+<section class="articles articles-home">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Dịch vụ</th>
+                <th scope="col">Loại dịch vụ</th>
+                <th scope="col">Đặt lịch</th>
+                <th scope="col">Trạng thái</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <th scope="row">@(++index)</th>
+                    <td>@item.ServicePackage</td>
+                    <td>@item.ServiceType</td>
+                    <td>@item.OrderDate</td>
+                    <td>@item.OrderType</td>
+                    @if(item.OrderTypeEnum == OrderTypeEnum.Booking)
+                    {
+                        <td><button onclick="cancelBooking(@item.ServiceOrderId)" class="btn btn-danger">Hủy lịch</button></td>
+                    }
+                    else if (item.OrderTypeEnum == OrderTypeEnum.Paying)
+                    {
+                        <td><button onclick="showPopupPayment(@item.ServiceOrderId)" data-toggle="modal" data-target="#exampleModal" class="btn btn-success">Thanh toán</button></td>
+                    }
+                    else if (item.OrderTypeEnum == OrderTypeEnum.Paid && !item.IsRating)
+                    {
+                        <td><button onclick="showPopupRating(@item.ServiceOrderId)" data-toggle="modal" data-target="#exampleModalFb" class="btn btn-success">Đánh giá</button></td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Thanh toán</h5>
+                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display:block" class="form-group input-group input-group-outline">
+                    <p id="order-date-id"></p>
+                    <p id="order-date-end-id"></p>
+                    <p id="totalPayment"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="paymentItem()" class="btn btn-success">Thanh toán</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Feedback-->
+<div class="modal fade" id="exampleModalFb" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Đánh giá</h5>
+                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display:block" class="form-group input-group input-group-outline">
+                    <label class="mb-2">Đánh giá:</label>
+                    <div class="rating-box">
+                        <label for="rating-2"><i class="far fa-star"></i></label>
+                        <label for="rating-4"><i class="far fa-star"></i></label>
+                        <label for="rating-6"><i class="far fa-star"></i></label>
+                        <label for="rating-8"><i class="far fa-star"></i></label>
+                        <label for="rating-10"><i class="far fa-star"></i></label>
+                        <input onclick="rating(2)" name="ratingStar" type="radio" id="rating-2" value="2" hidden />
+                        <input onclick="rating(4)" name="ratingStar" type="radio" id="rating-4" value="4" hidden />
+                        <input onclick="rating(6)" name="ratingStar" type="radio" id="rating-6" value="6" hidden />
+                        <input onclick="rating(8)" name="ratingStar" type="radio" id="rating-8" value="8" hidden />
+                        <input onclick="rating(10)" name="ratingStar" type="radio" id="rating-10" value="10" hidden />
+                    </div>
+                    <label class="mt-2 mb-2">Nội dung:</label>
+                    <textarea style="width:100%;border-radius:3px" title="Đánh giá" type="text" class="form-control" rows="6" id="messageRating-id" autofocus></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="sendRating()" class="btn btn-success">Đánh giá</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<section class="articles-question">
+    <h3 class="">Liên hệ nếu bạn có thắc mắc</h3>
+    <div class="input-container">
+        <input id="question-id" type="text" placeholder="Câu trả lời">
+        <button onclick="sendQuestion()">Submit</button>
+    </div>
+</section>
+<script>
+    let paymentId;
+    let serviceOrderId;
+
+    function rating(star){
+        // console.log(star);
+        const nodeList = document.querySelectorAll(".fa-star");
+        for (let i = 0; i < nodeList.length; i++) {
+            nodeList[i].classList.replace("fas", "far");
+            nodeList[i].classList.remove("checked");
+        }
+        for (let i = 0; i < star / 2; i++) {
+            nodeList[i].classList.replace("far", "fas");
+            nodeList[i].classList.add("checked");
+        }
+    }
+
+    function sendRating() {
+        let formData = new FormData();
+        let star = $('input[name="ratingStar"]:checked').val();
+        let message = $('#messageRating-id').val();
+        formData.append("ServiceOrderId", serviceOrderId);
+        formData.append("Rating", star);
+        formData.append("Message", message);
+        $.ajax(
+            {
+                url: `/Home/Feedback`,
+                type: "POST",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                data: formData,
+                //dataType: "json",
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    //console.log(data);
+                    alert(data);
+                    window.location.reload();
+                }
+            }
+        );
+    }
+
+    function cancelBooking(id){
+        if (confirm("Bạn muốn hủy lịch ?") == false) return;
+        $.ajax(
+            {
+                url: `/Home/CancelBooking?id=${id}`,
+                type: "GET",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                //data: formData,
+                //dataType: "json",
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    alert(data);
+                    window.location.reload();
+                }
+            }
+        );
+    }
+
+    function paymentItem() {
+        if (confirm("Bạn muốn thanh toán ?") == false) return;
+        var formData = new FormData();
+        formData.append("id", paymentId)
+        $.ajax(
+            {
+                url: `/Home/PaymentItem`,
+                type: "POST",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                data: formData,
+                //dataType: "json",
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    //console.log(data);
+                    alert(data);
+                    window.location.reload();
+                }
+            }
+        );
+    }
+
+    function showPopupPayment(id) {
+        $.ajax(
+            {
+                url: `/Home/ShowPayment?serviceId=${id}`,
+                type: "GET",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                //data: formData,
+                //dataType: "json",
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    paymentId = data.id;
+                    document.getElementById('order-date-end-id').innerHTML = "Thời gian kết thúc dịch vụ: " +  data.createTime;
+                    document.getElementById('totalPayment').innerHTML = "Số tiền thanh toán: " + data.price + " vnđ";
+                }
+            }
+        );
+    }
+
+    function showPopupRating(id) {
+        serviceOrderId = id;
+    }
+</script>

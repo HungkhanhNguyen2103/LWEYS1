@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h3 class="title">Bài viết liên quan</h3>
+<section class="articles articles-home">
+    @foreach (PostModel item in ViewBag.ListPost)
+    {
+        <article class="post">
+            <h2>“@item.Title”</h2>
+            <p onclick="window.location.href='/Home/PostDetail/@item.Id'">Tìm hiểu thêm</p>
+        </article>
+    }
+</section>
+<section class="articles-question">
+    <h3 class="">Liên hệ nếu bạn có thắc mắc</h3>
+    <div class="input-container">
+        <input id="question-id" type="text" placeholder="Câu trả lời">
+        <button onclick="sendQuestion()">Submit</button>
+    </div>
+</section>
+<script>
+    document.getElementById('home-cls').classList.add("active");
+</script>

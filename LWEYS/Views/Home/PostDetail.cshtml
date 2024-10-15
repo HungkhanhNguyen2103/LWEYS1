@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Bài viết chi tiết";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model Post
+<h3 class="title">@Model.Title</h3>
+<section class="articles articles-home">
+    <div id="div-show" style="width:100%;height:400px"><img id="img-show" style="width:40%;height:100%" src="@Model.Image" /></div>
+    <ul>@Model.PostDescription</ul>
+</section>
+<h3 class="title">Bài viết liên quan về chúng tôi</h3>
+<section class="articles articles-home">
+    @foreach (PostModel item in ViewBag.ListPost)
+    {
+        <article class="post">
+            <h2>“@item.Title”</h2>
+            <p onclick="window.location.href='/Home/PostDetail/@item.Id'">Tìm hiểu thêm</p>
+        </article>
+    }
+</section>
+<section class="articles-question">
+    <h3 class="">Liên hệ nếu bạn có thắc mắc</h3>
+    <div class="input-container">
+        <input id="question-id" type="text" placeholder="Câu trả lời">
+        <button onclick="sendQuestion()">Submit</button>
+    </div>
+</section>
+<script>
+    let val = document.getElementById('img-show').src;
+    if (val == null || val == "") document.getElementById('div-show').classList.add('d-none');
+    document.getElementById('home-cls').classList.add("active");
+</script>

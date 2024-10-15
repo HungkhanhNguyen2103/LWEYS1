@@ -1,0 +1,57 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Về chúng tôi";
+}
+@model AboutUs
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions {
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+<button type="button" onclick="document.getElementById('formModal').reset();" class="btn btn-success" data-toggle="modal" data-target="#exampleModalAboutUs">
+    Cập nhật
+</button>
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3">Về chúng tôi</h6>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+                <div class="mx-3 table-responsive p-0">
+                    @Model.Content
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalAboutUs" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="formModal" class="modal-content" method="post" asp-action="UpdateAboutUs">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Bài viết</h5>
+                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display:block" class="input-group input-group-outline">
+                    <label for="Description">Nội dung</label>
+                    <input asp-for="Id" hidden type="number" value="1"/>
+                    <textarea style="width:100%" asp-for="Content" type="text" class="form-control" rows="8" id="PostDescription-id" autofocus>@Model.Content</textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    document.getElementById('AboutUsId').classList.add('active');
+</script>

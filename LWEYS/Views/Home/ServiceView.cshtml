@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Dịch vụ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var type = ViewBag.ServiceType;
+    var index = 0;
+}
+@model List<ServiceModel>
+<ul style="justify-content:center;margin-top:1rem" class="footer-links">
+    <li><a href="/Home/ServiceView?Type=0" class="@(type == ServiceType.Online ? "active" : "")">Gói Online</a></li>
+    <li><a href="/Home/ServiceView?Type=1" class="@(type == ServiceType.Offline ? "active" : "")">Gói Offline</a></li>
+</ul>
+<section style="justify-content:center;margin-left:60px" class="articles articles-home">
+    @foreach (var item in Model)
+    {
+        <div class="card @(index++) @(index % 2 != 0 ? "basic" : "standard")">
+            <h3>@item.ServicePackage:</h3>
+            <p class="price"><span>VND</span> @item.Amount<span>/hour</span></p>
+            <p class="description">@item.Name</p>
+            <button onclick="window.location.href='/Home/ServiceDetailView/@item.Id'" class="card-button">Đặt lịch</button>
+        </div>
+    }
+</section>
+<section class="articles-question">
+    <h3 class="">Liên hệ nếu bạn có thắc mắc</h3>
+    <div class="input-container">
+        <input id="question-id" type="text" placeholder="Câu trả lời">
+        <button onclick="sendQuestion()">Submit</button>
+    </div>
+</section>
+<script>
+    document.getElementById('serviceview-cls').classList.add("active");
+</script>

@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/layoutHome.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" asp-append-version="true">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div style="cursor:pointer" onclick="window.location.href='/'" class="logo">
+                <img src="~/images/layoutHome/logo.png" alt="Logo" />
+            </div>
+            <ul id="nav-links" class="nav-links">
+                <li><a href="/" id="home-cls">Trang chủ</a></li>
+                <li><a href="/Home/AboutUs" id="aboutUs-cls">Giới thiệu</a></li>
+                <li><a href="/Home/Sharing" id="shared-cls">Góc chia sẻ</a></li>
+                <li><a href="/Home/ServiceView" id="serviceview-cls">Dịch vụ</a></li>
+                <li><a href="/Home/UserQuestion" id="feedback-cls">Chính sách khách hàng</a></li>
+            </ul>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        @User.Identity.Name
+                    </button>
+                    <div style="left:-4rem" class="dropdown-menu">
+                        <a class="dropdown-item" href="/Home/ServiceOrderHistory">Lịch sử đặt dịch vụ</a>
+                        <a class="dropdown-item" href="/Account/Logout">Đăng xuất</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="auth-buttons">
+                    <button onclick="window.location.href = '/Account/Login'" class="sign-in">Đăng nhập</button>
+                    <button onclick="window.location.href = '/Account/Register'" class="register">Đăng ký</button>
+                </div>
+            }
+        </nav>
+        <div class="@ViewData["HiddenBanner"] hero">
+            <h1>Bạn đang cần tìm người lắng nghe bản thân mình</h1>
+            <button onclick="window.location.href='/Home/ServiceView'" class="cta-button">Đặt lịch ngay</button>
+        </div>
+    </header>
+    @RenderBody()
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="~/images/layoutHome/facebook.png" alt="Facebook Logo" />
+            </div>
+            <ul class="footer-links mb-5">
+                <li><a href="/" id="home-cls-1">Trang chủ</a></li>
+                <li><a href="/Home/AboutUs" id="aboutUs-cls-1">Giới thiệu</a></li>
+                <li><a href="/Home/Sharing" id="shared-cls-1">Góc chia sẻ</a></li>
+                <li><a href="/Home/ServiceView" id="serviceview-cls-1">Dịch vụ</a></li>
+                <li><a href="/Home/UserQuestion" id="feedback-cls-1">Chính sách khách hàng</a></li>
+            </ul>
+            <div class="contact-info">
+                <p>Địa chỉ liên hệ: 190 Đội Cấn, Ba Đình, Hà Nội</p>
+                <p>SĐT: 0987468234</p>
+                <p>Website: LWEYS.com</p>
+            </div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.js" asp-append-version="true" ></script>
+    <script src="~/js/popper.js" asp-append-version="true"></script>
+    <script src="~/js/bootstrap.min.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr" asp-append-version="true"></script>
+    <script type="text/javascript">
+        ActiveNav();
+        function ActiveNav() {
+            var ul = document.getElementById("nav-links");
+            var items = ul.getElementsByTagName("a");
+            for (var i = 0; i < items.length; ++i) {
+                if (items[i].classList.contains('active')){
+                    document.getElementById(`${items[i].id}-1`).classList.add("active");
+                }
+            }
+        }
+
+        flatpickr("#datetimepicker", {
+            static: true,
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            monthSelectorType: "static",
+            minDate: "today",
+            time_24hr: true,
+            minuteIncrement: 30,
+            defaultDate: "today",
+            inline: true
+
+        });
+
+        function sendQuestion() {
+            let val = document.getElementById('question-id').value;
+            window.location.href = "/Home/UserQuestion?message=" + val;
+        }
+    </script>
+    @await Component.InvokeAsync("Notyf")
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

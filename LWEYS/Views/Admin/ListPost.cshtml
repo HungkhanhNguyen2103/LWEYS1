@@ -1,0 +1,178 @@
+﻿@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewData["Title"] = "Bài viết";
+}
+@model Post
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
+@functions {
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+<button type="button" onclick="document.getElementById('formModal').reset();" class="btn btn-success" data-toggle="modal" data-target="#exampleModalPost">
+    Tạo mới
+</button>
+<div class="row">
+    <div class="col-12">
+        <div class="card my-4">
+            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+                    <h6 class="text-white text-capitalize ps-3">Bài viết</h6>
+                </div>
+            </div>
+            <div class="card-body px-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tiêu đề</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tên bài viết</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ảnh</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ngày tạo</th>
+                                <th class="text-secondary opacity-7"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.ListPost)
+                            {
+                                <tr>
+                                    <td>
+                                        <p id="name-@item.Id" class="mx-3 text-xs font-weight-bold mb-0">@item.PostCategory</p>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">@item.Title</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <img src="@item.Image" class="avatar avatar-sm me-3 border-radius-lg" alt="">
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">@item.CreateDate</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <a href="javascript:;" onclick="showPopup(@item.Id)" class="text-secondary font-weight-bold text-xs" data-toggle="modal" data-target="#exampleModalPost">
+                                            Sửa
+                                        </a>
+                                        <a href="javascript:;" onclick="deleteItem(@item.Id)" class="mx-3 text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit">
+                                            Xóa
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalPost" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="formModal" class="modal-content" method="post" asp-action="UpdatePost">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Bài viết</h5>
+                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display:block" class="form-group input-group input-group-outline">
+                    <label>Tiêu đề</label>
+                    <select style="width:100%" id="post-cate-id" asp-for="PostCategoryId" class="form-control">
+                        @foreach (var postCate in ViewBag.ListPostCategory)
+                        {
+                            <option value="@postCate.Id">@postCate.Name</option>
+                        }
+                    </select>
+                </div>
+                <div style="display:block" class="form-group input-group input-group-outline">
+                    <label for="Title">Tên</label>
+                    <input style="width:100%" id="post-title" type="text" asp-for="Title" class="form-control" placeholder="Tên">
+                </div>
+                <div style="display:block" class="input-group input-group-outline">
+                    <label for="Description">Bài viết</label>
+                    <textarea style="width:100%" asp-for="PostDescription" type="text" class="form-control" rows="8" id="PostDescription-id" autofocus></textarea>
+                </div>
+                <div style="display:block" class="input-group input-group-outline">
+                        <input type="number" asp-for="Id" id="post-id" hidden/>
+                        <label for="Name">Ảnh bài viết</label>
+                        <input style="width:100%" type="file" onchange="changeImageFile(this)" accept="image/*" class="form-control">
+                        <img style="margin-top:1rem;width:100% !important;height:15rem!important; border-radius:1rem!important" id="img-post-id" src="" class="d-none avatar avatar-sm me-3 border-radius-lg">
+                        <input type="text" id="image-post" asp-for="Image" hidden/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    document.getElementById('ListPostId').classList.add('active');
+    function changeImageFile(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $(input).next('img').removeClass('d-none');
+                $(input).next('img').attr('src', e.target.result);
+                $('#image-post').val(e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function showPopup(id){
+        $.ajax(
+            {
+                url: `/Admin/GetPost?id=${id}`,
+                type: "GET",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                //data: formData,
+                //dataType: "json",
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    $('#post-cate-id').val(data.postCategoryId);
+                    $('#post-id').val(data.id);
+                    $('#PostDescription-id').val(data.postDescription);
+                    $('#img-post-id').attr('src', data.image);
+                    $('#image-post').val(data.image);
+                    $('#img-post-id').removeClass('d-none');
+                    $('#post-title').val(data.title);
+                    //console.log(data);
+                    //window.location.reload();
+                }
+            }
+        );
+    }
+
+    function deleteItem(id) {
+        if (confirm("Bạn có muốn xóa ?") == false) return;
+        //var formData = new FormData();
+        $.ajax(
+            {
+                url: `/Admin/DeletePost?id=${id}`,
+                type: "GET",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    alert(data);
+                    window.location.reload();
+                }
+            }
+        );
+
+    }
+</script>

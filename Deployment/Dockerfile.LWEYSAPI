@@ -11,6 +11,8 @@ WORKDIR /src
 COPY . ./LWEYSWebAPI
 #RUN dotnet restore "./LWEYSWebAPI/LWEYSWebAPI.csproj"
 WORKDIR /src/LWEYSWebAPI
+RUN dotnet build "../BusinessObject/BusinessObject.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "../Repositories/Repositories.csproj" -c $BUILD_CONFIGURATION -o /app/build
 RUN dotnet build "./LWEYSWebAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

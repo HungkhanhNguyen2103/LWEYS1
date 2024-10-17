@@ -139,6 +139,8 @@ app.Use(async (context, next) =>
 
 app.UseNotyf();
 
+app.UseCookiePolicy();
+
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");

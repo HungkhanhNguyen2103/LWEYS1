@@ -2,9 +2,9 @@
     lweys_api:
         image: lweys_api
         container_name: lweys_api
-        build:
-           context: ./../LWEYSWebAPI
-           dockerfile: ./Dockerfile.LWEYSAPI
+        # build:
+           # context: ./../LWEYSWebAPI
+           # dockerfile: ./Dockerfile.LWEYSAPI
         ports:
             - 7229:8080
         volumes:

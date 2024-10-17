@@ -8,6 +8,8 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ../BusinessObject /BusinessObject
+COPY ../Repositories /Repositories
 COPY . ./LWEYSWebAPI
 #RUN dotnet restore "./LWEYSWebAPI/LWEYSWebAPI.csproj"
 WORKDIR /src/LWEYSWebAPI

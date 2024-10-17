@@ -1,0 +1,53 @@
+﻿services:
+    lweys_api:
+        image: lweys_api
+        container_name: lweys_api
+        build:
+           context: ./../LWEYSWebAPI
+           dockerfile: ./Dockerfile.LWEYSAPI
+        ports:
+            - 7229:8080
+        volumes:
+            - /root/docker/volumes/lweys_api/content_root_path/wwwroot:/app/wwwroot
+        restart: always
+        environment: 
+            - ASPNETCORE_ENVIRONMENT=Production
+            - CONNECTION_STRING=Server=mssqlserver;Database=LWEYS;User=sa;Password=0123654798aA@;TrustServerCertificate=True
+    # lweys:
+    #     image: lweys
+    #     container_name: lweys
+    #     build:
+    #        context: ./../LWEYS
+    #        dockerfile: ./Dockerfile.LWEYS
+    #     ports:
+    #         - 50619:8080
+    #     volumes:
+    #         - /root/docker/volumes/lweys/content_root_path/wwwroot:/app/wwwroot
+    #     restart: always
+    #     environment: 
+    #         - ASPNETCORE_ENVIRONMENT=Production
+    #         # - CONNECTION_STRING=Server=mssqlserver;Database=LWEYS;User=sa;Password=0123654798aA@;TrustServerCertificate=True
+    #         - API_URL=lweys_api:7229
+    
+
+    # Server=mssqlserver
+    # Server=103.57.222.128
+    # redis:
+    #     image: redis
+    #     container_name: redis_server
+    #     ports:
+    #         - 6379:6379
+    #     restart: always
+    # mssqlserver:
+    #     image: mcr.microsoft.com/mssql/server
+    #     container_name: mssqlserver
+    #     user: root
+    #     ports:
+    #         - 1433:1433
+    #     restart: always
+    #     environment:
+    #         SA_PASSWORD: Bucthutinhthu2!
+    #         ACCEPT_EULA: Y
+    #         MSSQL_PID: Express
+    #     volumes:
+    #         - /root/data/MSSQLSERVER/DATA:/var/opt/mssql/data

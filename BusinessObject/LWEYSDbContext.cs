@@ -18,7 +18,7 @@ namespace BusinessObject
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-			builder.Seed();
+			//builder.Seed();
 
 			// Config Identity
 			builder.Entity<Account>().ToTable("Account").HasKey(x => x.Id);

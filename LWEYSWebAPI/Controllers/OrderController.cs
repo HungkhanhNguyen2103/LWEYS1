@@ -79,6 +79,14 @@ namespace LWEYSWebAPI.Controllers
             return res;
         }
 
+        [Route("PaymentWithMomo")]
+        [HttpGet]
+        public async Task<ReponderModel<string>> PaymentWithMomo(int id)
+        {
+            var res = await _orderRepository.PaymentWithMomo(id);
+            return res;
+        }
+
         [Route("GetListServiceOrder")]
         [HttpGet]
         public async Task<ReponderModel<ServiceOrderModel>> GetListServiceOrder(string userName)
@@ -103,6 +111,8 @@ namespace LWEYSWebAPI.Controllers
             return res;
         }
 
+
+
         [Route("DeleteService")]
         [HttpGet]
         public async Task<ReponderModel<string>> Delete(int id)
@@ -118,5 +128,7 @@ namespace LWEYSWebAPI.Controllers
             var res = await _orderRepository.Booking(serviceOrder);
             return res;
         }
+
+
     }
 }

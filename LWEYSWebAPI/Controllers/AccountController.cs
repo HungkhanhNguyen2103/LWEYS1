@@ -44,5 +44,29 @@ namespace LWEYSWebAPI.Controllers
             var rs = await _accountRepository.Login(model);
             return rs;
         }
+
+        [Route("ConfirmEmail")]
+        [HttpPost]
+        public async Task<ReponderModel<string>> ConfirmEmail(EmailConfirm email)
+        {
+            var rs = await _accountRepository.ConfirmEmail(email.Token);
+            return rs;
+        }
+
+        [Route("UpdateInformation")]
+        [HttpPost]
+        public async Task<ReponderModel<string>> UpdateInformation(AccountModel account)
+        {
+            var rs = await _accountRepository.UpdateInformation(account);
+            return rs;
+        }
+
+        [Route("Information")]
+        [HttpGet]
+        public async Task<ReponderModel<AccountModel>> Information(string username)
+        {
+            var rs = await _accountRepository.GetInformation(username);
+            return rs;
+        }
     }
 }

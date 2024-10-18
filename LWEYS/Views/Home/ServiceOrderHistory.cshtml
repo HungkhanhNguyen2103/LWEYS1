@@ -46,7 +46,8 @@
                     }
                     else if (item.OrderTypeEnum == OrderTypeEnum.Paying)
                     {
-                        <td><button onclick="showPopupPayment(@item.ServiceOrderId)" data-toggle="modal" data-target="#exampleModal" class="btn btn-success">Thanh toán</button></td>
+                        @* onclick = "showPopupPayment(@item.ServiceOrderId)" *@
+                        <td><a asp-action="Bill" asp-route-serviceId="@item.ServiceOrderId" class="btn btn-success">Xem hóa đơn</a></td>
                     }
                     else if (item.OrderTypeEnum == OrderTypeEnum.Paid && !item.IsRating)
                     {

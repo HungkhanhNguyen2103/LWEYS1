@@ -11,6 +11,9 @@ namespace Repositories.IRepository
     public interface IUserQuestionRepository
     {
         Task<ReponderModel<string>> SendQuestion(UserQuestion question);
+        Task<ReponderModel<string>> FeedbackUserQuestion(UserQuestion question);
         Task<ReponderModel<UserQuestion>> Get();
+        Task<ReponderModel<UserQuestion>> GetByUserName(string username);
+
     }
 }

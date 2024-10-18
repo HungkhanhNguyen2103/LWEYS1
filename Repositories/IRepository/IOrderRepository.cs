@@ -19,6 +19,7 @@ namespace Repositories.IRepository
         Task<ReponderModel<ServiceOrderModel>> GetListServiceOrderByUser(string userName);
         Task<ReponderModel<ReportModel>> GetReport();
         Task<ReponderModel<string>> PaymentOrder(int id);
+        Task<ReponderModel<string>> PaymentWithMomo(int id);
         Task<ReponderModel<string>> Rating(FeedbackModel feedbackModel);
         Task<ReponderModel<FeedbackModel>> GetRating(int serviceId);
         Task<ReponderModel<string>> ChangeServiceOrderType(int id, OrderTypeEnum orderType);

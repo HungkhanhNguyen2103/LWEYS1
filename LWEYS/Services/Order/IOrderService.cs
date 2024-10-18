@@ -12,9 +12,10 @@ namespace LWEYS.Services.Order
         Task<ReponderModel<string>> Booking(int serviceId, DateTime bookingDate, string username);
         Task<ReponderModel<ServiceOrderModel>> GetListServiceOrder(string username);
         Task<ReponderModel<string>> CancelBooking(int id);
+        Task<ReponderModel<string>> PaymentWithMomo(int id);
         Task<ReponderModel<ReportModel>> Report();
         Task<ReponderModel<ServiceOrderHistoryModel>> ShowPayment(int serviceId);
-        Task<ReponderModel<string>> PaymentOrder(int id);
+        Task<ReponderModel<string>> PaymentOrder(int id, int resultCode = 0);
         Task<ReponderModel<string>> Rating(FeedbackModel feedbackModel);
         Task<ReponderModel<FeedbackModel>> GetRating(int serviceId);
         Task<ReponderModel<string>> ChangeServiceOrderType(int id,OrderTypeEnum orderType);

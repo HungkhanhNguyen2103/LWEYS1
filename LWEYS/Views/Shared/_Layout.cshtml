@@ -1,4 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var jwtToken = ViewContext.HttpContext.Request.Cookies["token"];
+    if (string.IsNullOrEmpty(jwtToken) && User.Identity.IsAuthenticated)
+    {
+        ViewContext.HttpContext.Response.Redirect("/Account/Logout");
+    }
+    else if (!string.IsNullOrEmpty(jwtToken) && !User.Identity.IsAuthenticated)
+    {
+        ViewContext.HttpContext.Response.Redirect("/Account/VerifyToken");
+    }
+}
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -29,7 +40,9 @@
                     <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                         @User.Identity.Name
                     </button>
-                    <div style="left:-4rem" class="dropdown-menu">
+                    <div style="left:-5rem" class="dropdown-menu">
+                        <a class="dropdown-item" href="/Account/AccountInformation">Thông tin cá nhân</a>
+                        <a class="dropdown-item" href="/Home/UserQuestionListView">Câu hỏi người dùng</a>
                         <a class="dropdown-item" href="/Home/ServiceOrderHistory">Lịch sử đặt dịch vụ</a>
                         <a class="dropdown-item" href="/Account/Logout">Đăng xuất</a>
                     </div>

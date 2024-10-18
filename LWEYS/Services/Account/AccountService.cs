@@ -1,6 +1,8 @@
-﻿using BusinessObject.BaseModel;
+﻿using BusinessObject;
+using BusinessObject.BaseModel;
 using LWEYS.API;
 using LWEYS.Common;
+using Newtonsoft.Json.Linq;
 
 namespace LWEYS.Services.Account
 {
@@ -72,6 +74,60 @@ namespace LWEYS.Services.Account
             {
                 string url = PathUrl.ACCOUNT_GETALL;
                 res = await _api.Get<ReponderModel<BusinessObject.Account>>(url);
+
+            }
+            catch (Exception ex)
+            {
+                res.Message = "Lỗi gọi api!";
+            }
+            return res;
+        }
+
+        public async Task<ReponderModel<string>> ConfirmEmail(string token)
+        {
+            var res = new ReponderModel<string>();
+            try
+            {
+                var emailConfirm = new EmailConfirm
+                {
+                    Token = token
+                };
+                string url = PathUrl.ACCOUNT_CONFIRMEMAIL;
+                res = await _api.Post<ReponderModel<string>>(url, emailConfirm);
+
+            }
+            catch (Exception ex)
+            {
+                res.Message = "Lỗi gọi api!";
+            }
+            return res;
+        }
+
+        public async Task<ReponderModel<AccountModel>> GetInformation(string username)
+        {
+            var res = new ReponderModel<AccountModel>();
+            try
+            {
+                string url = PathUrl.ACCOUNT_GET_INFO;
+                var param = new Dictionary<string, string>();
+                param.Add("username", username);
+                res = await _api.Get<ReponderModel<AccountModel>>(url,param);
+
+            }
+            catch (Exception ex)
+            {
+                res.Message = "Lỗi gọi api!";
+            }
+            return res;
+        }
+
+        public async Task<ReponderModel<string>> UpdateInformation(AccountModel account)
+        {
+            var res = new ReponderModel<string>();
+            try
+            {
+                string url = PathUrl.ACCOUNT_UPDATE_INFO;
+                res = await _api.Post<ReponderModel<string>>(url, account);
 
             }
             catch (Exception ex)

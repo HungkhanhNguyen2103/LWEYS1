@@ -9,11 +9,11 @@
     <form class="form-feedback" method="post" asp-action="SendQuestion">
         <div class="mb-2 form-group">
             <label>Họ tên</label>
-            <input asp-for="FullName" type="text" class="form-control" required placeholder="Họ tên">
+            <input asp-for="FullName" value="@User.Identity.Name" type="text" class="form-control" required placeholder="Họ tên">
         </div>
         <div class="mb-2 form-group">
             <label>Email</label>
-            <input asp-for="Email" type="email" class="form-control" required placeholder="Email">
+            <input asp-for="Email" value="@ViewBag.Email" type="email" class="form-control" required placeholder="Email">
         </div>
         <div class="mb-2 form-group">
             <label>Tin nhắn</label>

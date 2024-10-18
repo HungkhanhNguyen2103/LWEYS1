@@ -6,6 +6,9 @@
         public static string ACCOUNT_REGISTER = "api/Account/Register";
         public static string ACCOUNT_LOGIN = "api/Account/Login";
         public static string ACCOUNT_GETALL = "api/Account/GetAll";
+        public static string ACCOUNT_GET_INFO = "api/Account/Information";
+        public static string ACCOUNT_UPDATE_INFO = "api/Account/UpdateInformation";
+        public static string ACCOUNT_CONFIRMEMAIL = "api/Account/ConfirmEmail";
 
         //Post Category
         public static string POSTCATEGORY_GETALL = "api/PostCategory/GetAll";
@@ -33,13 +36,18 @@
         public static string SERVICE_CHANGE_ORDERTYPE = "api/Order/ChangeServiceOrderType";
         public static string SERVICE_SHOW_PAYMENT = "api/Order/ShowPayment";
         public static string SERVICE_PAYMENT_ORDER = "api/Order/PaymentOrder";
+
+        public static string SERVICE_PAYMENT_WITH_MOMO = "api/Order/PaymentWithMomo";
+
         public static string SERVICE_RATING = "api/Order/Rating";
         public static string SERVICE_GET_RATING = "api/Order/GetRating";
 
         
         //User Question
         public static string USER_QUESTION_SEND = "api/UserQuestion/SendQuestion";
+        public static string USER_QUESTION_FEEDBACK = "api/UserQuestion/FeedbackUserQuestion";
         public static string USER_QUESTION_GETALL = "api/UserQuestion/GetQuestions";
+        public static string USER_QUESTION_GET_BY_USER = "api/UserQuestion/GetQuestionsByUser";
 
         //Report
         public static string REPORT_APP = "api/Order/Report";

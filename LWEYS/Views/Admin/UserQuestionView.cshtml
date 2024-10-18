@@ -2,6 +2,7 @@
     Layout = "~/Views/Admin/_AdminLayout.cshtml";
     ViewData["Title"] = "Câu hỏi người dùng";
 }
+@model UserQuestion
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 @functions {
     public string GetAntiXsrfRequestToken()
@@ -24,9 +25,12 @@
                         <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tên</th>
-                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tên</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tài khoản</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nội dung</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nội dung Phản hồi</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tài khoản phản hồi</th>
+                                <th class="text-secondary opacity-7"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -45,6 +49,21 @@
                                     <td class="align-middle">
                                         <span class="text-secondary text-xs font-weight-bold">@item.Message</span>
                                     </td>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">@item.AdminMessage</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span class="text-secondary text-xs font-weight-bold">@item.AdminUserName</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        @if (string.IsNullOrEmpty(item.AdminMessage))
+                                        {
+                                            <a href="javascript:;" onclick="showPopup(@item.Id)" class="text-secondary font-weight-bold text-xs" data-toggle="modal" data-target="#exampleModalUserQuestion">
+                                                Phản hồi
+                                            </a>
+                                        }
+
+                                    </td>
                                 </tr>
                             }
 
@@ -55,6 +74,35 @@
         </div>
     </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalUserQuestion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="formModal" class="modal-content" method="post" asp-action="FeedbackUserQuestion">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Phản hồi người dùng</h5>
+                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display:block" class="input-group input-group-outline">
+                    <label for="Description">Nội dung</label>
+                    <textarea style="width:100%" asp-for="AdminMessage" type="text" class="form-control" rows="8" autofocus></textarea>
+                </div>
+                <div class="d-none input-group input-group-outline">
+                    <input type="number" asp-for="Id" id="user-question-id"  />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+            </div>
+        </form>
+    </div>
+</div>
 <script>
     document.getElementById('QuestionViewId').classList.add('active');
+
+    function showPopup(id) {
+        document.getElementById('user-question-id').value = id;
+    }
 </script>

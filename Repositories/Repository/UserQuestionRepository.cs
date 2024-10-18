@@ -18,10 +18,48 @@ namespace Repositories.Repository
             LWEYSDbContext = lWEYSDbContext;
         }
 
+        public async Task<ReponderModel<string>> FeedbackUserQuestion(UserQuestion question)
+        {
+            var response = new ReponderModel<string>();
+            if (question == null)
+            {
+                response.Message = "Dữ liệu không hợp lệ";
+                return response;
+            }
+            try
+            {
+                var userQuestion = await LWEYSDbContext.UserQuestions.FirstOrDefaultAsync(c => c.Id == question.Id);
+                if (userQuestion == null)
+                {
+                    response.Message = "Dữ liệu không tồn tại";
+                    return response;
+                }
+                userQuestion.AdminMessage = question.AdminMessage;
+                userQuestion.AdminUserName = question.AdminUserName;
+                await LWEYSDbContext.SaveChangesAsync();
+                response.IsSussess = true;
+                response.Message = "Đã phản hồi";
+            }
+            catch (Exception ex)
+            {
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
         public async Task<ReponderModel<UserQuestion>> Get()
         {
             var reponse = new ReponderModel<UserQuestion>();
             var result = await LWEYSDbContext.UserQuestions.ToListAsync();
+            reponse.DataList = result;
+            return reponse;
+        }
+
+        public async Task<ReponderModel<UserQuestion>> GetByUserName(string username)
+        {
+            var reponse = new ReponderModel<UserQuestion>();
+            var result = await LWEYSDbContext.UserQuestions.Where(c => c.UserName == username).ToListAsync();
             reponse.DataList = result;
             return reponse;
         }

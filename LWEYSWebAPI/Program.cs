@@ -1,6 +1,7 @@
 using BusinessObject;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Repositories;
 using Repositories.IRepository;
 using Repositories.Repository;
 
@@ -17,7 +18,7 @@ builder.Services.AddIdentity<Account, IdentityRole>()
     .AddEntityFrameworkStores<LWEYSDbContext>()
     .AddDefaultTokenProviders();
 
-
+builder.Services.AddSingleton<EmailSender, EmailSender>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IPostCategoryRepository, PostCategoryRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
@@ -43,7 +44,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 //app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 

@@ -7,7 +7,9 @@ using LWEYS.Services.Order;
 using LWEYS.Services.Post;
 using LWEYS.Services.PostCategory;
 using LWEYS.Services.UserQuestion;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LWEYS.Controllers
 {
@@ -37,6 +39,7 @@ namespace LWEYS.Controllers
             _accountService = accountService;
         }
 
+        [Authorize(Roles = Role.Admin)]
         public async Task<IActionResult> ListService()
         {
             var res = await _orderService.GetAllService();
@@ -44,6 +47,7 @@ namespace LWEYS.Controllers
             return View();
         }
 
+        [Authorize(Roles = Role.Admin)]
         public async Task<IActionResult> GetService(int id)
         {
             var res = await _orderService.GetService(id);
@@ -65,6 +69,7 @@ namespace LWEYS.Controllers
             return RedirectToAction("ListService");
         }
 
+        [Authorize(Roles = Role.Admin)]
         public async Task<IActionResult> ListPostCategory()
         {
             var result = await _postCategoryService.GetPostCategories();
@@ -81,6 +86,7 @@ namespace LWEYS.Controllers
             return RedirectToAction("ListPost");
         }
 
+        [Authorize(Roles = $"{Role.Admin},{Role.Staff}")]
         public async Task<IActionResult> ListPost()
         {
             var resultPostCategory = await _postCategoryService.GetPostCategories();
@@ -111,6 +117,7 @@ namespace LWEYS.Controllers
             return RedirectToAction("ListPostCategory");
         }
 
+        [Authorize(Roles = Role.Admin)]
         public async Task<IActionResult> AboutUs()
         {
             var res = await _aboutUsService.Get();
@@ -131,6 +138,7 @@ namespace LWEYS.Controllers
             return Json(res.Message);
         }
 
+        [Authorize(Roles = $"{Role.Admin},{Role.Staff}")]
         public async Task<IActionResult> UserQuestionView()
         {
             var result = await _userQuestionService.Get();
@@ -138,6 +146,7 @@ namespace LWEYS.Controllers
             return View();
         }
 
+        [Authorize(Roles = Role.Admin)]
         public async Task<IActionResult> ListAccountView()
         {
             var result = await _accountService.GetAll();
@@ -145,11 +154,24 @@ namespace LWEYS.Controllers
             return View();
         }
 
+        [Authorize(Roles = Role.Admin)]
         public async Task<IActionResult> ListServiceOrder()
         {
             var result = await _orderService.GetListServiceOrder("*");
             ViewBag.ListServiceOrder = result.DataList;
             return View();
+        }
+
+        [Authorize(Roles = $"{Role.Admin},{Role.Staff}")]
+        [HttpPost]
+        public async Task<IActionResult> FeedbackUserQuestion(UserQuestion userQuestion)
+        {
+            var username = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            userQuestion.AdminUserName = username;
+            var result = await _userQuestionService.FeedbackUserQuestion(userQuestion);
+            if (result.IsSussess) _notyf.Success(result.Message);
+            else _notyf.Error(result.Message);
+            return RedirectToAction("UserQuestionView");
         }
 
         public async Task<IActionResult> ChangeServiceOrderType(int id, OrderTypeEnum orderType)
@@ -158,14 +180,20 @@ namespace LWEYS.Controllers
             return Json(result.Message);
         }
 
+        [Authorize(Roles = $"{Role.Admin},{Role.Staff}")]
         public async Task<IActionResult> ListFeedback()
         {
             var result = await _orderService.GetRating(-1);
             return View(result.DataList);
         }
 
+        [Authorize(Roles = $"{Role.Admin},{Role.Staff}")]
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("Staff"))
+            {
+                return RedirectToAction("ListPost");
+            }
             var result = await _orderService.Report();
             return View(result.Data);
         }

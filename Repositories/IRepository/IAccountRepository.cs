@@ -13,6 +13,10 @@ namespace Repositories.Repository
         Task<ReponderModel<string>> Register(AccountModel account);
         Task<ReponderModel<string>> Login(AccountModel account);
         Task<ReponderModel<Account>> GetAll();
+        Task<ReponderModel<string>> ConfirmEmail(string? token);
+
+        Task<ReponderModel<AccountModel>> GetInformation(string username);
+        Task<ReponderModel<string>> UpdateInformation(AccountModel account);
 
     }
 }

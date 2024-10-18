@@ -11,6 +11,7 @@ namespace BusinessObject
     {
         public int Id { get; set; }
         public int Rating { get; set; }
+        [Column(TypeName = "nvarchar(255)")]
         public string? Message { get; set; }
         public string? UserName { get; set; }
         public int ServiceId { get; set; }

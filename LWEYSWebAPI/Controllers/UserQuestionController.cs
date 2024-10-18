@@ -23,11 +23,28 @@ namespace LWEYSWebAPI.Controllers
             return res;
         }
 
+        [Route("FeedbackUserQuestion")]
+        [HttpPost]
+        public async Task<ReponderModel<string>> FeedbackUserQuestion(UserQuestion question)
+        {
+            var res = await _userQuestionRepository.FeedbackUserQuestion(question);
+            return res;
+        }
+        
+
         [Route("GetQuestions")]
         [HttpGet]
         public async Task<ReponderModel<UserQuestion>> GetQuestions()
         {
             var res = await _userQuestionRepository.Get();
+            return res;
+        }
+
+        [Route("GetQuestionsByUser")]
+        [HttpGet]
+        public async Task<ReponderModel<UserQuestion>> GetQuestionsByUser(string username)
+        {
+            var res = await _userQuestionRepository.GetByUserName(username);
             return res;
         }
     }

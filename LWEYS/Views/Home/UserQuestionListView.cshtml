@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Câu hỏi người dùng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int index = 0;
+}
+@model List<UserQuestion>
+<style>
+    label{
+        cursor:pointer;
+    }
+</style>
+<h3 class="title">Câu hỏi người dùng</h3>
+<section class="articles articles-home">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Câu hỏi</th>
+                <th scope="col">Câu phản hồi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <th scope="row">@(++index)</th>
+                    <td>@item.Message</td>
+                    <td>@item.AdminMessage</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+<section class="articles-question">
+    <h3 class="">Liên hệ nếu bạn có thắc mắc</h3>
+    <div class="input-container">
+        <input id="question-id" type="text" placeholder="Câu trả lời">
+        <button onclick="sendQuestion()">Submit</button>
+    </div>
+</section>

@@ -71,19 +71,7 @@ namespace LWEYS.API
                     client.BaseAddress = new Uri(_configuration["API:Url"]);
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    //if (!url.Contains("Account"))
-                    //{
-                    //    client.DefaultRequestHeaders.Authorization =
-                    //            new AuthenticationHeaderValue("Bearer",
-                    //            _context.HttpContext.Session.GetString(""));
-                    //}
-
-
-                    //client.DefaultRequestHeaders.Host = "localhost";
-                    //if (overrideTimeout != null)
-                    // {
                     client.Timeout = overrideTimeout.GetValueOrDefault(TimeSpan.FromSeconds(60));
-                    // }
 
                     var content = CreateHttpContent(JObj);
                     var res = client.PostAsync(string.Format(url), content).Result;

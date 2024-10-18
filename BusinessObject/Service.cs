@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,8 +10,10 @@ namespace BusinessObject
     public class Service
     {
         public int Id { get; set; }
+        [Column(TypeName = "nvarchar(50)")]
         public string? Name { get; set; }
         public int Amount { get; set; }
+        [Column(TypeName = "nvarchar(255)")]
         public string? Description { get; set; }
         public ServicePackageEnum ServicePackage { get; set; }
         public ServiceType ServiceType { get; set; }

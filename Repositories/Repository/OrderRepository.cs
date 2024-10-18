@@ -248,6 +248,31 @@ namespace Repositories.Repository
             return response;
         }
 
+        public async Task<ReponderModel<string>> PaymentWithMomo(int id)
+        {
+            var response = new ReponderModel<string>();
+            var rs = await LWEYSDbContext.ServiceOrderHistories.Include(c => c.ServiceOrder).FirstOrDefaultAsync(c => c.Id == id);
+            if (rs == null || rs.ServiceOrder == null)
+            {
+                response.Message = "Data không hợp lệ";
+                return response;
+            }
+            var momoPaymentUrl = Payment.MoMoPayment(new QuickPayResquest
+            {
+                amount = rs.Price,
+                extraData = rs.Id.ToString(),
+            });
+            if(momoPaymentUrl.resultCode != 0)
+            {
+                response.Message = momoPaymentUrl.message;
+                return response;
+            }
+            response.Data = momoPaymentUrl.shortLink;
+            response.Message = "Chuyển hướng thanh toán";
+            response.IsSussess = true;
+            return response;
+        }
+
         public async Task<ReponderModel<string>> Rating(FeedbackModel feedbacks)
         {
             var response = new ReponderModel<string>();
@@ -281,12 +306,16 @@ namespace Repositories.Repository
             var response = new ReponderModel<ServiceOrderHistoryModel>();
             var model = new ServiceOrderHistoryModel();
             model.ServiceOrderId = serviceOrderId;
-            var result = await LWEYSDbContext.ServiceOrderHistories.FirstOrDefaultAsync(c => c.ServiceOrderId == serviceOrderId);
-            if (result == null)
+            var result = await LWEYSDbContext.ServiceOrderHistories.Where(c => c.ServiceOrderId == serviceOrderId).Include(c => c.ServiceOrder).ThenInclude(x => x.Service).FirstOrDefaultAsync();
+            if (result == null || result.ServiceOrder == null || result.ServiceOrder.Service == null)
             {
                 response.Message = "Data không hợp lệ";
                 return response;
             }
+            model.ServiceType = result.ServiceOrder.Service.ServiceType == ServiceType.Offline ? ServiceTypeCls.Offline : ServiceTypeCls.Online;
+            model.ServicePackage = result.ServiceOrder.Service.ServicePackage == ServicePackageEnum.BasicPackage ? ServicePackage.BasicPackage
+                                     : result.ServiceOrder.Service.ServicePackage == ServicePackageEnum.StandardPackage ? ServicePackage.StandardPackage
+                                     : ServicePackage.PremiumPackage;
             model.Id = result.Id;
             model.UserName = result.UserName;
             model.Price = result.Price;

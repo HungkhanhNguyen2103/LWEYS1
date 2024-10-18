@@ -6,6 +6,7 @@ using LWEYS.Services.AboutUs;
 using LWEYS.Services.Order;
 using LWEYS.Services.Post;
 using LWEYS.Services.UserQuestion;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
@@ -82,6 +83,7 @@ namespace LWEYS.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> SendQuestion(UserQuestion userQuestion)
         {
             if (User.Identity != null && !User.Identity.IsAuthenticated)
@@ -101,13 +103,30 @@ namespace LWEYS.Controllers
 
         }
 
+        [Authorize]
         public IActionResult UserQuestion(string message = "")
 		{
-			ViewBag.Message = message;
+            ViewBag.Email = User.FindFirst(ClaimTypes.Email).Value;
+            ViewBag.Message = message;
 			return View();
 		}
 
-		public async Task<IActionResult> PostDetail(int id)
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> PaymentWithMomo(int id)
+        {
+            var result = await _orderService.PaymentWithMomo(id);
+            return Json(result);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> PaymentStatus(int resultCode , string extraData)
+        {
+            var result = await _orderService.PaymentOrder(int.Parse(extraData), resultCode);
+            return View(result);
+        }
+
+        public async Task<IActionResult> PostDetail(int id)
 		{
 			var post = await _postService.Get(id);
             var result = await _postService.GetAll();
@@ -129,15 +148,21 @@ namespace LWEYS.Controllers
             return View();
         }
 
+        [Authorize(Roles = Role.User)]
         public async Task<IActionResult> ServiceOrderHistory()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                var userName = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                var result = await _orderService.GetListServiceOrder(userName);
-                return View(result.DataList);
-            }
-            return Redirect("/Account/Login");
+            var userName = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var result = await _orderService.GetListServiceOrder(userName);
+            return View(result.DataList);
+
+        }
+
+        [Authorize(Roles = Role.User)]
+        public async Task<IActionResult> UserQuestionListView()
+        {
+            var userName = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var result = await _userQuestionService.GetByUserName(userName);
+            return View(result.DataList);
 
         }
 
@@ -161,8 +186,25 @@ namespace LWEYS.Controllers
             return Json(result.Message);
         }
 
+        [Authorize]
+        public async Task<IActionResult> Bill(int serviceId)
+        {
+            var billModel = new BillModel();
+            var resultServiceHis = await _orderService.ShowPayment(serviceId);
+            billModel.ServiceOrderHistoryModel = resultServiceHis.Data;
+
+            billModel.Email = User.FindFirst(ClaimTypes.Email).Value;
+            billModel.PhoneNumber = User.FindFirst(ClaimTypes.MobilePhone).Value;
+
+            return View(billModel);
+        }
+
         public async Task<IActionResult> Index()
 		{
+            if(User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Staff")))
+            {
+                return Redirect("/Admin");
+            }
 			var result = await _postService.GetAll();
 			ViewBag.ListPost = result.DataList;
             return View();

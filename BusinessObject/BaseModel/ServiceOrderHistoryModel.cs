@@ -12,6 +12,8 @@ namespace BusinessObject.BaseModel
         public string? UserName { get; set; }
         public int Amount { get; set; }
         public int Price { get; set; }
+        public string? ServicePackage { get; set; }
+        public string? ServiceType { get; set; }
         public string? CreateTime { get; set; }
         public int ServiceOrderId { get; set; }
     }

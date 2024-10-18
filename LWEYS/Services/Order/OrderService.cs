@@ -182,11 +182,16 @@ namespace LWEYS.Services.Order
             return res;
         }
 
-        public async Task<ReponderModel<string>> PaymentOrder(int id)
+        public async Task<ReponderModel<string>> PaymentOrder(int id, int resultCode = 0)
         {
             var res = new ReponderModel<string>();
             try
             {
+                if(resultCode != 0)
+                {
+                    res.Message = "Thanh toán không thành công";
+                    return res;
+                }
                 string url = PathUrl.SERVICE_PAYMENT_ORDER;
                 var param = new Dictionary<string, string>();
                 param.Add("id", id.ToString());
@@ -223,6 +228,23 @@ namespace LWEYS.Services.Order
                 var param = new Dictionary<string, string>();
                 param.Add("serviceId", serviceId.ToString());
                 res = await _api.Get<ReponderModel<FeedbackModel>>(url,param);
+            }
+            catch (Exception ex)
+            {
+                res.Message = "Lỗi gọi api!";
+            }
+            return res;
+        }
+
+        public async Task<ReponderModel<string>> PaymentWithMomo(int id)
+        {
+            var res = new ReponderModel<string>();
+            try
+            {
+                string url = PathUrl.SERVICE_PAYMENT_WITH_MOMO;
+                var param = new Dictionary<string, string>();
+                param.Add("id", id.ToString());
+                res = await _api.Get<ReponderModel<string>>(url, param);
             }
             catch (Exception ex)
             {

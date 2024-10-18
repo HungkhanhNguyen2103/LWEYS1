@@ -18,7 +18,7 @@ namespace BusinessObject
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-			//builder.Seed();
+			builder.Seed();
 
 			// Config Identity
 			builder.Entity<Account>().ToTable("Account").HasKey(x => x.Id);
@@ -30,6 +30,7 @@ namespace BusinessObject
 			builder.Entity<ServiceOrderHistory>().ToTable("ServiceOrderHistory").HasKey(x => x.Id);
 			builder.Entity<UserQuestion>().ToTable("UserQuestion").HasKey(x => x.Id);
 			builder.Entity<Feedbacks>().ToTable("Feedbacks").HasKey(x => x.Id);
+			builder.Entity<TemplateEmail>().ToTable("TemplateEmail").HasKey(x => x.Id);
 
         }
 
@@ -41,5 +42,6 @@ namespace BusinessObject
         public virtual DbSet<ServiceOrderHistory> ServiceOrderHistories { get; set; }
         public virtual DbSet<UserQuestion> UserQuestions { get; set; }
         public virtual DbSet<Feedbacks> Feedbacks { get; set; }
+        public virtual DbSet<TemplateEmail> TemplateEmails { get; set; }
     }
 }

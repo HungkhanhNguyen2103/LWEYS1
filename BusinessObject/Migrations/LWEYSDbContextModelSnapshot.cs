@@ -31,7 +31,7 @@ namespace BusinessObject.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(MAX)");
 
                     b.HasKey("Id");
 
@@ -61,7 +61,7 @@ namespace BusinessObject.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Gender")
                         .HasColumnType("int");
@@ -116,18 +116,35 @@ namespace BusinessObject.Migrations
                         {
                             Id = "7d5002bd-f22f-4c7c-bce1-3d22eed213ff",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cfa16678-33ab-40da-987a-9fcaf017acf0",
+                            ConcurrencyStamp = "3298b934-5040-4e84-b2d3-dbf0272291cb",
                             Email = "admin@gmail.com",
                             EmailConfirmed = false,
                             FullName = "Admin",
                             Gender = 0,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDsHgS60RPh17N9kTiUKEbS8JYA0BJLiAagyGWExFiMtCq5LqsltB5Rpub/LFuYwZQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDfsJ5aaHIC+f6XTX5vDnJjm8w1f6DR+Ez6szfHKCTU+scuxw4CNBXLCBSScIomnaw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "818550c2-bfd7-4444-b5e2-4f52bcb889bd",
+                            SecurityStamp = "ac5f70b3-94d9-48c8-bfa3-f17359d35fa0",
                             TwoFactorEnabled = false,
                             UserName = "admin"
+                        },
+                        new
+                        {
+                            Id = "7d5002bd-f22f-4c7c-bce1-3d22eff321ef",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "8a8b3883-53fb-4014-a4df-a46dc56e0243",
+                            Email = "staff@gmail.com",
+                            EmailConfirmed = false,
+                            FullName = "Staff",
+                            Gender = 0,
+                            LockoutEnabled = false,
+                            NormalizedUserName = "STAFF",
+                            PasswordHash = "AQAAAAIAAYagAAAAEC1+qMG94pn1KxFciRwr9yebA40jaTdJjaUiUqLpmml9dJs3SOdYccll7lQsyBxNbQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "d37dec01-08b8-41a2-8523-9f6e7ae2f803",
+                            TwoFactorEnabled = false,
+                            UserName = "staff"
                         });
                 });
 
@@ -143,7 +160,7 @@ namespace BusinessObject.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -179,10 +196,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("PostDescription")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -200,10 +217,10 @@ namespace BusinessObject.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -222,10 +239,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("ServicePackage")
                         .HasColumnType("int");
@@ -301,6 +318,28 @@ namespace BusinessObject.Migrations
                     b.ToTable("ServiceOrderHistory", (string)null);
                 });
 
+            modelBuilder.Entity("BusinessObject.TemplateEmail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(MAX)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TemplateEmail", (string)null);
+                });
+
             modelBuilder.Entity("BusinessObject.UserQuestion", b =>
                 {
                     b.Property<int>("Id")
@@ -309,14 +348,20 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AdminMessage")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AdminUserName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Message")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(max)");
@@ -364,6 +409,12 @@ namespace BusinessObject.Migrations
                             Id = "627ec4a3-646f-455f-b65f-2903f87c19b6",
                             Name = "User",
                             NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "627ec4a3-646f-455f-b65f-2903cf7819b2",
+                            Name = "Staff",
+                            NormalizedName = "STAFF"
                         });
                 });
 
@@ -458,6 +509,11 @@ namespace BusinessObject.Migrations
                         {
                             UserId = "7d5002bd-f22f-4c7c-bce1-3d22eed213ff",
                             RoleId = "46118fe1-2d15-4c5b-82f9-bc2f19b4a7c3"
+                        },
+                        new
+                        {
+                            UserId = "7d5002bd-f22f-4c7c-bce1-3d22eff321ef",
+                            RoleId = "627ec4a3-646f-455f-b65f-2903cf7819b2"
                         });
                 });
 

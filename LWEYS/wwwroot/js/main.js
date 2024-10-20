@@ -3,10 +3,24 @@
 	"use strict";
 
 	var fullHeight = function() {
-
-		$('.js-fullheight').css('height', '703px');
-		$(window).resize(function(){
+		//$(window).height()
+		let height = $(window).height();
+		//console.log(height);
+		if (height > 703) {
+			$('.js-fullheight').css('height', $(window).height());
+		}
+		else {
 			$('.js-fullheight').css('height', '703px');
+		}
+		
+		$(window).resize(function(){
+			let height1 = $(window).height();
+			if (height1 > 703) {
+				$('.js-fullheight').css('height', $(window).height());
+			}
+			else {
+				$('.js-fullheight').css('height', '703px');
+			}
 		});
 		//$(window).height()
 	};

@@ -27,7 +27,7 @@
             <div style="cursor:pointer" onclick="window.location.href='/'" class="logo">
                 <img src="~/images/layoutHome/logo.png" alt="Logo" />
             </div>
-            <ul id="nav-links" class="nav-links">
+            <ul id="nav-links" class="menu-vertical nav-links">
                 <li><a href="/" id="home-cls">Trang chủ</a></li>
                 <li><a href="/Home/AboutUs" id="aboutUs-cls">Giới thiệu</a></li>
                 <li><a href="/Home/Sharing" id="shared-cls">Góc chia sẻ</a></li>
@@ -36,7 +36,7 @@
             </ul>
             @if (User.Identity.IsAuthenticated)
             {
-                <div class="dropdown">
+                <div class="dropdown menu-vertical">
                     <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                         @User.Identity.Name
                     </button>
@@ -50,15 +50,49 @@
             }
             else
             {
-                <div class="auth-buttons">
+                <div class="auth-buttons menu-vertical">
                     <button onclick="window.location.href = '/Account/Login'" class="sign-in">Đăng nhập</button>
                     <button onclick="window.location.href = '/Account/Register'" class="register">Đăng ký</button>
                 </div>
             }
+            <div onclick="showListMenu()" class="icon-list-menu">
+                <i class="fas fa-list-ul"></i>
+            </div>
         </nav>
         <div class="@ViewData["HiddenBanner"] hero">
             <h1>Bạn đang cần tìm người lắng nghe bản thân mình</h1>
             <button onclick="window.location.href='/Home/ServiceView'" class="cta-button">Đặt lịch ngay</button>
+        </div>
+        <div class="menu-horizontal-hidden menu-horizontal menu-horizontal-cls">
+            <i id="hide-menu" onclick="hideListMenu()" class="d-none fas fa-times"></i>
+            <ul id="nav-links-1" class="menu-horizontal-cls menu-horizontal-hidden nav-links">
+                <li><a href="/" id="home-cls-2">Trang chủ</a></li>
+                <li><a href="/Home/AboutUs" id="aboutUs-cls-2">Giới thiệu</a></li>
+                <li><a href="/Home/Sharing" id="shared-cls-2">Góc chia sẻ</a></li>
+                <li><a href="/Home/ServiceView" id="serviceview-cls-2">Dịch vụ</a></li>
+                <li id="li-5"><a href="/Home/UserQuestion" id="feedback-cls-2">Chính sách khách hàng</a></li>
+            </ul>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="dropdown menu-horizontal-btn menu-horizontal-cls menu-horizontal-hidden">
+                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        @User.Identity.Name
+                    </button>
+                    <div style="left:-5rem" class="dropdown-menu">
+                        <a class="dropdown-item" href="/Account/AccountInformation">Thông tin cá nhân</a>
+                        <a class="dropdown-item" href="/Home/UserQuestionListView">Câu hỏi người dùng</a>
+                        <a class="dropdown-item" href="/Home/ServiceOrderHistory">Lịch sử đặt dịch vụ</a>
+                        <a class="dropdown-item" href="/Account/Logout">Đăng xuất</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="auth-buttons menu-horizontal-btn menu-horizontal-cls menu-horizontal-hidden">
+                    <button onclick="window.location.href = '/Account/Login'" class="sign-in">Đăng nhập</button>
+                    <button onclick="window.location.href = '/Account/Register'" class="register">Đăng ký</button>
+                </div>
+            }
         </div>
     </header>
     @RenderBody()
@@ -67,7 +101,7 @@
             <div style="cursor:pointer" onclick="window.location.href='https://www.facebook.com/profile.php?id=61566101507963&mibextid=ZbWKwL'" class=" footer-logo">
                 <img src="~/images/layoutHome/facebook.png" alt="Facebook Logo" />
             </div>
-            <ul class="footer-links mb-5">
+            <ul class="footer-links-1 footer-links mb-5">
                 <li><a href="/" id="home-cls-1">Trang chủ</a></li>
                 <li><a href="/Home/AboutUs" id="aboutUs-cls-1">Giới thiệu</a></li>
                 <li><a href="/Home/Sharing" id="shared-cls-1">Góc chia sẻ</a></li>
@@ -87,6 +121,15 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr" asp-append-version="true"></script>
     <script type="text/javascript">
+        //showListMenu();
+        $(window).on("resize", function () {
+            // console.log(screen.width)
+            if (screen.width > 950) {
+                hideListMenu();
+            }
+        });
+
+
         ActiveNav();
         function ActiveNav() {
             var ul = document.getElementById("nav-links");
@@ -94,6 +137,7 @@
             for (var i = 0; i < items.length; ++i) {
                 if (items[i].classList.contains('active')){
                     document.getElementById(`${items[i].id}-1`).classList.add("active");
+                    document.getElementById(`${items[i].id}-2`).classList.add("active");
                 }
             }
         }
@@ -115,6 +159,22 @@
             let val = document.getElementById('question-id').value;
             window.location.href = "/Home/UserQuestion?message=" + val;
         }
+
+        function showListMenu(){
+            $(".menu-horizontal-cls").each(function() {
+                $(this).removeClass('menu-horizontal-hidden');
+            });
+            $("#hide-menu").removeClass("d-none");
+        }
+
+        function hideListMenu(){
+            $("#hide-menu").addClass("d-none");
+            $(".menu-horizontal-cls").each(function () {
+                $(this).addClass('menu-horizontal-hidden');
+            });
+
+        }
+
     </script>
     @await Component.InvokeAsync("Notyf")
     @RenderSection("Scripts", required: false)

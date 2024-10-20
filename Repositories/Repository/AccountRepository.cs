@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Repositories.Repository
@@ -147,7 +148,8 @@ namespace Repositories.Repository
             var result = await _userManager.CreateAsync(user, account.Password);
             if (!result.Succeeded)
             {
-                if (result.Errors.Count() != 0) responder.Message = result.Errors.First().Description;
+                //if (result.Errors.Count() != 0) responder.Message = result.Errors.First().Description;
+                if (result.Errors.Count() != 0) responder.Message = "Mật khẩu phải chứa số, chữ thường,chữ hoa và kí tự đặc biệt";
                 else responder.Message = "Tài khoản tạo không thành công";
                 return responder;
             }

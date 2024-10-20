@@ -4,11 +4,11 @@
 
 	var fullHeight = function() {
 
-		$('.js-fullheight').css('height', $(window).height());
+		$('.js-fullheight').css('height', '703px');
 		$(window).resize(function(){
-			$('.js-fullheight').css('height', $(window).height());
+			$('.js-fullheight').css('height', '703px');
 		});
-
+		//$(window).height()
 	};
 	fullHeight();
 

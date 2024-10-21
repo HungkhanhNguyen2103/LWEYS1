@@ -18,7 +18,7 @@ namespace Repositories
 
         //private static string returnUrl = "https://localhost:50618/Home/PaymentStatus";
         //private static string returnUrl = "http://103.57.222.128:8800/Home/PaymentStatus";
-        private static string returnUrl = "http://lweys.online/Home/PaymentStatus";
+        private static string returnUrl = $"{Environment.GetEnvironmentVariable("WEBPAGE_URL")}/Home/PaymentStatus";
         //var env = Environment.
         public static QuickPayResquest MoMoPayment(QuickPayResquest request)
         {

@@ -166,7 +166,8 @@ namespace Repositories.Repository
                     responder.Message = "Không có dữ liệu giao diện";
                     return responder;
                 }
-                template.Body = !string.IsNullOrEmpty(template.Body) ? template.Body.Replace("$${EmailConfirmLink}", _configuration["WebPage:Url"] + "/Account/ConfirmSuccess?token=" + responder.Data) : string.Empty;
+                var webPageUrl = Environment.GetEnvironmentVariable("WEBPAGE_URL");
+                template.Body = !string.IsNullOrEmpty(template.Body) ? template.Body.Replace("$${EmailConfirmLink}", webPageUrl + "/Account/ConfirmSuccess?token=" + responder.Data) : string.Empty;
                 var emailModel = new EmailModel
                 {
                     Body = template.Body,

@@ -67,7 +67,7 @@ namespace Repositories.Repository
 
         public async Task<ReponderModel<string>> UpdatePost(Post post)
         {
-            var originPath = _configuration["API:Url"];
+            var originPath = Environment.GetEnvironmentVariable("API_URL");
             var path = Environment.CurrentDirectory;
             path = Path.Combine(path,"wwwroot" ,"Resource", "Images");
             if (!Directory.Exists(path))

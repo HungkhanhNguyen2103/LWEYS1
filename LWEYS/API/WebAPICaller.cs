@@ -10,7 +10,6 @@ namespace LWEYS.API
     {
         private static IConfiguration _configuration;
         private readonly IHttpContextAccessor _context;
-
         //public static string _token { get; set; }
 
         public WebAPICaller(
@@ -23,13 +22,13 @@ namespace LWEYS.API
 
         public async Task<T> Get<T>(string url, Dictionary<string, string> dctParams = null, TimeSpan? overrideTimeout = null)
         {
-            // Environment.GetEnvironmentVariable()
+            var API_URL = Environment.GetEnvironmentVariable("API_URL");
             T obj = default(T);
             try
             {
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri(_configuration["API:Url"]);
+                    client.BaseAddress = new Uri(API_URL);
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     //client.DefaultRequestHeaders.Authorization =
@@ -63,12 +62,13 @@ namespace LWEYS.API
 
         public async Task<T> Post<T>(string url, object JObj, TimeSpan? overrideTimeout = null)
         {
+            var API_URL = Environment.GetEnvironmentVariable("API_URL");
             T obj = default(T);
             try
             {
                 using (var client = new HttpClient())
                 {
-                    client.BaseAddress = new Uri(_configuration["API:Url"]);
+                    client.BaseAddress = new Uri(API_URL);
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     client.Timeout = overrideTimeout.GetValueOrDefault(TimeSpan.FromSeconds(60));

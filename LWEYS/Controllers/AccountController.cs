@@ -60,8 +60,8 @@ namespace LWEYS.Controllers
                 return RedirectToAction("AccountInformation");
             }
             _notyf.Success(result.Message);
-            HttpContext.Response.Cookies.Append("token", result.Data, new CookieOptions { MaxAge = TimeSpan.FromMinutes(45) });
-            return Redirect("/");
+            //HttpContext.Response.Cookies.Append("token", result.Data, new CookieOptions { MaxAge = TimeSpan.FromMinutes(45) });
+            return RedirectToAction("Logout");
         }
 
         [AllowAnonymous]

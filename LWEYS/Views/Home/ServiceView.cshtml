@@ -1,8 +1,10 @@
-﻿@{
+﻿@using System.Globalization
+@{
     ViewData["Title"] = "Dịch vụ";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var type = ViewBag.ServiceType;
     var index = 0;
+    CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
 }
 @model List<ServiceModel>
 <ul style="justify-content:center;margin-top:1rem" class="footer-links">
@@ -14,7 +16,7 @@
     {
         <div class="card @(index++) @(index % 2 != 0 ? "basic" : "standard")">
             <h3>@item.ServicePackage:</h3>
-            <p class="price"><span>VND</span> @item.Amount<span>/hour</span></p>
+            <p class="price"><span>VND</span> @item.Amount.ToString("#,###", cul.NumberFormat)<span>/hour</span></p>
             <p class="description">@item.Name</p>
             <button onclick="window.location.href='/Home/ServiceDetailView/@item.Id'" class="card-button">Đặt lịch</button>
         </div>

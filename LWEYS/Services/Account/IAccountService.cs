@@ -6,7 +6,10 @@ namespace LWEYS.Services.Account
     {
         Task<ReponderModel<string>> Register(AccountModel model);
         Task<ReponderModel<string>> Login(AccountModel model);
-        Task<ReponderModel<BusinessObject.Account>> GetAll();
+        Task<ReponderModel<AccountViewModel>> GetAll(string role);
+        Task<ReponderModel<string>> GrantAccessRole(AccountModel model);
+        Task<ReponderModel<string>> ForgotPassword(AccountModel model);
+        Task<ReponderModel<string>> ToggleLockUser(string username, bool lockAccount);
         Task<ReponderModel<string>> ConfirmEmail(string token);
         Task<ReponderModel<AccountModel>> GetInformation(string username);
         Task<ReponderModel<string>> UpdateInformation(AccountModel account);

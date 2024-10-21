@@ -9,6 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -70,11 +71,24 @@ namespace Repositories.Repository
             return response;
         }
 
-        public async Task<ReponderModel<Account>> GetAll()
+        public async Task<ReponderModel<AccountViewModel>> GetAll(string role)
         {
-            var response = new ReponderModel<Account>();
-            var result = await _userManager.Users.ToListAsync();
-            response.DataList = result;
+            var response = new ReponderModel<AccountViewModel>();
+            string sql = $@"select acc.* from AspNetUserRoles as ur 
+                inner join AspNetRoles as rs on ur.RoleId = rs.Id
+                inner join Account as acc on ur.UserId = acc.Id
+                where rs.Name = '{role}'";
+            var result = await LWEYSDbContext.Users.FromSqlRaw<Account>(sql).ToListAsync();
+            response.DataList = result.Select(c => new AccountViewModel
+            {
+                Email = c.Email,
+                FullName = c.FullName,
+                UserName = c.UserName,
+                PhoneNumber = c.PhoneNumber,
+                LockoutEnabled = c.LockoutEnabled,
+                Status = c.LockoutEnabled ? "Đang khóa" : c.EmailConfirmed ? "Đang hoạt động" : !c.EmailConfirmed ? "Chưa xác thực" : "Không hoạt động",
+            }).ToList();
+            response.IsSussess = true;
             return response;
         }
 
@@ -99,6 +113,22 @@ namespace Repositories.Repository
             return response;
         }
 
+        public async Task<ReponderModel<string>> ToggleLockUser(string username,bool lockAccount)
+        {
+            var responder = new ReponderModel<string>();
+            var userExist = await _userManager.FindByNameAsync(username);
+            if (userExist == null)
+            {
+                responder.Message = "Tài khoản không tồn tại";
+                return responder;
+            }
+            userExist.LockoutEnabled = lockAccount;
+            await LWEYSDbContext.SaveChangesAsync();
+            responder.IsSussess = true;
+            responder.Message = lockAccount ? "Khóa thành công" : "Mở khóa thành công";
+            return responder;
+        }
+
         public async Task<ReponderModel<string>> Login(AccountModel account)
         {
             var responder = new ReponderModel<string>();
@@ -112,6 +142,12 @@ namespace Repositories.Repository
             if (!isCheck)
             {
                 responder.Message = "Mật khẩu không chính xác";
+                return responder;
+            }
+
+            if (userExists.LockoutEnabled)
+            {
+                responder.Message = "Tài khoản đang bị khóa. Vui lòng báo với admin";
                 return responder;
             }
             var roles = await _userManager.GetRolesAsync(userExists);
@@ -131,7 +167,21 @@ namespace Repositories.Repository
                 responder.Message = "Tài khoản đã tồn tại";
                 return responder;
             }
-            if (!long.TryParse(account.PhoneNumber,out long phoneNumber))
+
+            var emailExist = await _userManager.FindByEmailAsync(account.Email);
+            if (emailExist != null)
+            {
+                responder.Message = "Email đã được sử dụng";
+                return responder;
+            }
+
+            if (!account.PhoneNumber.StartsWith("0"))
+            {
+                responder.Message = "Số điện thoại phải bắt đầu từ số 0";
+                return responder;
+            }
+
+            if (!long.TryParse(account.PhoneNumber,out long phoneNumber) || account.PhoneNumber.Length != 10)
             {
                 responder.Message = "Số điện thoại không đúng định dạng";
                 return responder;
@@ -144,6 +194,7 @@ namespace Repositories.Repository
                 Address = account.Address,
                 FullName = account.FullName,
                 PhoneNumber = account.PhoneNumber,
+                LockoutEnabled = false,
             };
             var result = await _userManager.CreateAsync(user, account.Password);
             if (!result.Succeeded)
@@ -245,5 +296,68 @@ namespace Repositories.Repository
 			return await Task.FromResult(token);
 		}
 
-	}
+        public async Task<ReponderModel<string>> GrantAccessRole(string username)
+        {
+            var responder = new ReponderModel<string>();
+            var userExist = await _userManager.FindByNameAsync(username);
+            if (userExist == null)
+            {
+                responder.Message = "Tài khoản không tồn tại";
+                return responder;
+            }
+            await _userManager.AddToRoleAsync(userExist, Role.Staff);
+            responder.IsSussess = true;
+            responder.Message = "Cấp quyền thành công";
+            return responder;
+        }
+
+        public async Task<ReponderModel<string>> ForgotPassword(string email)
+        {
+            var responder = new ReponderModel<string>();
+            var userExist = await _userManager.FindByEmailAsync(email);
+            if (userExist == null)
+            {
+                responder.Message = "Email không tồn tại";
+                return responder;
+            }
+            //Send Email 
+            var template = await LWEYSDbContext.TemplateEmails.FirstOrDefaultAsync(c => c.Name == "ForgotPassword");
+            if (template == null)
+            {
+                responder.Message = "Không có dữ liệu giao diện";
+                return responder;
+            }
+            var webPageUrl = Environment.GetEnvironmentVariable("WEBPAGE_URL");
+            var newPassword = CreateRandomPassword(10);
+            var body = !string.IsNullOrEmpty(template.Body) ? template.Body.Replace("$${NewPassWord}", newPassword) : string.Empty;
+            var emailModel = new EmailModel
+            {
+                Body = body,
+                Subject = template.Subject,
+                To = new List<string>() { email }
+            };
+            await _emailSender.SendEmailAsync(emailModel);
+
+            string resetToken = await _userManager.GeneratePasswordResetTokenAsync(userExist);
+            var passwordChangeResult = await _userManager.ResetPasswordAsync(userExist, resetToken, newPassword);
+            responder.IsSussess = true;
+            return responder;
+        }
+
+        private string CreateRandomPassword(int length = 15)
+        {
+            string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*?_-";
+            Random random = new Random();
+
+            char[] chars = new char[length];
+            for (int i = 0; i < length; i++)
+            {
+                chars[i] = validChars[random.Next(0, validChars.Length)];
+            }
+            return new string(chars);
+        }
+
+    }
+
+
 }

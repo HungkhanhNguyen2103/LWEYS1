@@ -3,6 +3,7 @@ using BusinessObject.BaseModel;
 using LWEYS.API;
 using LWEYS.Common;
 using Newtonsoft.Json.Linq;
+using System.Data;
 
 namespace LWEYS.Services.Account
 {
@@ -67,13 +68,15 @@ namespace LWEYS.Services.Account
 
         }
 
-        public async Task<ReponderModel<BusinessObject.Account>> GetAll()
+        public async Task<ReponderModel<AccountViewModel>> GetAll(string role)
         {
-            var res = new ReponderModel<BusinessObject.Account>();
+            var res = new ReponderModel<AccountViewModel>();
             try
             {
                 string url = PathUrl.ACCOUNT_GETALL;
-                res = await _api.Get<ReponderModel<BusinessObject.Account>>(url);
+                var param = new Dictionary<string, string>();
+                param.Add("role", role);
+                res = await _api.Get<ReponderModel<AccountViewModel>>(url, param);
 
             }
             catch (Exception ex)
@@ -136,5 +139,57 @@ namespace LWEYS.Services.Account
             }
             return res;
         }
+
+        public async Task<ReponderModel<string>> ToggleLockUser(string username, bool lockAccount)
+        {
+            var res = new ReponderModel<string>();
+            try
+            {
+                string url = PathUrl.ACCOUNT_TOGGLE_LOCK_USER;
+                var param = new Dictionary<string, string>();
+                param.Add("username", username);
+                param.Add("lockAccount", lockAccount.ToString());
+                res = await _api.Get<ReponderModel<string>>(url, param);
+
+            }
+            catch (Exception ex)
+            {
+                res.Message = "Lỗi gọi api!";
+            }
+            return res;
+        }
+
+        public async Task<ReponderModel<string>> GrantAccessRole(AccountModel model)
+        {
+            var res = new ReponderModel<string>();
+            try
+            {
+                string url = PathUrl.ACCOUNT_ACCESS_ROLE;
+                res = await _api.Post<ReponderModel<string>>(url, model);
+
+            }
+            catch (Exception ex)
+            {
+                res.Message = "Lỗi gọi api!";
+            }
+            return res;
+        }
+
+        public async Task<ReponderModel<string>> ForgotPassword(AccountModel model)
+        {
+            var res = new ReponderModel<string>();
+            try
+            {
+                string url = PathUrl.ACCOUNT_FORGOT_PASSWORD;
+                res = await _api.Post<ReponderModel<string>>(url, model);
+
+            }
+            catch (Exception ex)
+            {
+                res.Message = "Lỗi gọi api!";
+            }
+            return res;
+        }
+        
     }
 }

@@ -69,7 +69,7 @@ namespace LWEYS.Controllers
             return RedirectToAction("ListService");
         }
 
-        [Authorize(Roles = Role.Admin)]
+        [Authorize(Roles = $"{Role.Admin},{Role.Staff}")]
         public async Task<IActionResult> ListPostCategory()
         {
             var result = await _postCategoryService.GetPostCategories();
@@ -132,6 +132,7 @@ namespace LWEYS.Controllers
             return RedirectToAction("AboutUs");
         }
 
+        [Authorize(Roles = $"{Role.Admin},{Role.Staff}")]
         public async Task<IActionResult> DeletePostCategory(int id)
         {
             var res = await _postCategoryService.DeletePostCategories(id);
@@ -147,14 +148,33 @@ namespace LWEYS.Controllers
         }
 
         [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> ListAccountView()
+        public async Task<IActionResult> ListAccountView(string role = Role.User)
         {
-            var result = await _accountService.GetAll();
+            var result = await _accountService.GetAll(role);
+            ViewBag.ListRoles = Role.ListRoles;
             ViewBag.ListAccount = result.DataList;
+            ViewBag.SelectedRole = role;
+            ViewBag.IsCustomer = role == Role.User ? true : false;
             return View();
         }
 
         [Authorize(Roles = Role.Admin)]
+        public async Task<IActionResult> ToggleLockUser(string username,bool lockAccount)
+        {
+            var result = await _accountService.ToggleLockUser(username, lockAccount);
+            return Json(result.Message);
+        }
+
+        [HttpPost]
+
+        [Authorize(Roles = Role.Admin)]
+        public async Task<IActionResult> GrantAccessRole(string username)
+        {
+            var result = await _accountService.GrantAccessRole(new AccountModel { UserName = username});
+            return Json(result.Message);
+        }
+
+        [Authorize(Roles = $"{Role.Admin},{Role.Staff}")]
         public async Task<IActionResult> ListServiceOrder()
         {
             var result = await _orderService.GetListServiceOrder("*");

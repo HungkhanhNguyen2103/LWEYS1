@@ -22,11 +22,20 @@ namespace LWEYSWebAPI.Controllers
 
         [Route("GetAll")]
         [HttpGet]
-        public async Task<ReponderModel<Account>> GetAll()
+        public async Task<ReponderModel<AccountViewModel>> GetAll(string role)
         {
-            var rs = await _accountRepository.GetAll();
+            var rs = await _accountRepository.GetAll(role);
             return rs;
         }
+
+        [Route("ToggleLockUser")]
+        [HttpGet]
+        public async Task<ReponderModel<string>> ToggleLockUser(string username,bool lockAccount)
+        {
+            var rs = await _accountRepository.ToggleLockUser(username,lockAccount);
+            return rs;
+        }
+ 
 
         [Route("Register")]
         [HttpPost]
@@ -42,6 +51,22 @@ namespace LWEYSWebAPI.Controllers
         public async Task<ReponderModel<string>> Login(AccountModel model)
         {
             var rs = await _accountRepository.Login(model);
+            return rs;
+        }
+
+        [Route("GrantAccessRole")]
+        [HttpPost]
+        public async Task<ReponderModel<string>> GrantAccessRole(AccountModel model)
+        {
+            var rs = await _accountRepository.GrantAccessRole(model.UserName);
+            return rs;
+        }
+
+        [Route("ForgotPassword")]
+        [HttpPost]
+        public async Task<ReponderModel<string>> ForgotPassword(AccountModel model)
+        {
+            var rs = await _accountRepository.ForgotPassword(model.Email);
             return rs;
         }
 

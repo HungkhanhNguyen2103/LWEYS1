@@ -10,7 +10,22 @@
         return Xsrf.GetAndStoreTokens(Context).RequestToken;
     }
 }
-
+<div style="display:block" class="mb-4 form-group input-group input-group-outline">
+    <label>Vai trò</label>
+    <select onchange="changeRole(this)" style="width:5rem;cursor:pointer" class="form-control">
+        @foreach (string role in ViewBag.ListRoles)
+        {
+            if (role == ViewBag.SelectedRole)
+            {
+                <option value="@role" selected>@role</option>
+            }
+            else
+            {
+                <option value="@role">@role</option>
+            }
+        }
+    </select>
+</div>
 <div class="row">
     <div class="col-12">
         <div class="card my-4">
@@ -28,10 +43,16 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tài khoản</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Họ tên</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
+                                @if (ViewBag.IsCustomer)
+                                {
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Trạng thái</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
+                                }    
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (Account item in ViewBag.ListAccount)
+                            @foreach (AccountViewModel item in ViewBag.ListAccount)
                             {
                                 <tr>
                                     <td class="align-middle">
@@ -46,6 +67,31 @@
                                     <td class="align-middle">
                                         <span class="text-secondary text-xs font-weight-bold">@item.Email</span>
                                     </td>
+                                    @if (ViewBag.IsCustomer)
+                                    {
+                                        <td class="align-middle">
+                                            <span class="text-secondary text-xs font-weight-bold">@item.Status</span>
+                                        </td>
+                                        <td class="align-middle">
+                                            @if (item.LockoutEnabled)
+                                            {
+                                                <a href="javascript:;" onclick="inactive('@item.UserName','false')" class="text-secondary font-weight-bold text-xs">
+                                                    Mở khóa tài khoản
+                                                </a>
+                                            }
+                                            else{
+                                                <a href="javascript:;" onclick="inactive('@item.UserName','true')" class="text-secondary font-weight-bold text-xs">
+                                                    Khóa tài khoản
+                                                </a>
+                                            }
+                                        </td>
+                                        <td class="align-middle">
+                                            <a href="javascript:;" onclick="authRole('@item.UserName')" class="text-secondary font-weight-bold text-xs">
+                                                Cấp quyền nhân viên
+                                            </a>
+                                        </td>
+                                    }
+
                                 </tr>
                             }
 
@@ -58,4 +104,65 @@
 </div>
 <script>
     document.getElementById('AccountViewId').classList.add('active');
+
+    function changeRole(el) {
+        var role = $(el).val();
+        document.location.href = `/Admin/ListAccountView?role=${role}`;
+    }
+
+    function authRole(userName) {
+        if (confirm("Bạn muốn cấp quyền nhân viên cho tài khoản " + userName + " ?") == false) return;
+        var formData = new FormData();
+        formData.append('username', userName);
+        $.ajax(
+            {
+                url: `/Admin/GrantAccessRole`,
+                type: "POST",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                data: formData,
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    alert(data);
+                    window.location.reload();
+                }
+            }
+        );
+    }
+
+    function inactive(userName,lockAccount){
+        var message = "";
+        var lockAcc = false;
+        if(lockAccount == 'false'){
+            message = "Bạn có muốn mở khóa tài khoản ?";
+            lockAcc = false;
+        }
+        else{
+            message = "Bạn có muốn khóa tài khoản ?";
+            lockAcc = true;
+        }
+        if (confirm(message) == false) return;
+        //var formData = new FormData();
+        $.ajax(
+            {
+                url: `/Admin/ToggleLockUser?username=${userName}&lockAccount=${lockAcc}`,
+                type: "GET",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    alert(data);
+                    window.location.reload();
+                }
+            }
+        );
+    }
 </script>

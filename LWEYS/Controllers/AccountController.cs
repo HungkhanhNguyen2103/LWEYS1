@@ -106,6 +106,38 @@ namespace LWEYS.Controllers
             return View();
 		}
 
+        public IActionResult ForgotPassword()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return Redirect("/");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(AccountModel model)
+        {
+            var res = await _accountService.ForgotPassword(model);
+            if (!res.IsSussess) _notyf.Error(res.Message);
+            else
+            {
+                return RedirectToAction("ForgotPasswordConfirm");
+            }
+            return View();
+        }
+
+        [AllowAnonymous]
+        public IActionResult ForgotPasswordConfirm()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return Redirect("/");
+            }
+            return View();
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> Login(AccountModel account)
         {

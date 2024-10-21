@@ -9,6 +9,9 @@
         public static string ACCOUNT_GET_INFO = "api/Account/Information";
         public static string ACCOUNT_UPDATE_INFO = "api/Account/UpdateInformation";
         public static string ACCOUNT_CONFIRMEMAIL = "api/Account/ConfirmEmail";
+        public static string ACCOUNT_TOGGLE_LOCK_USER = "api/Account/ToggleLockUser";
+        public static string ACCOUNT_ACCESS_ROLE = "api/Account/GrantAccessRole";
+        public static string ACCOUNT_FORGOT_PASSWORD = "api/Account/ForgotPassword";
 
         //Post Category
         public static string POSTCATEGORY_GETALL = "api/PostCategory/GetAll";

@@ -1,33 +1,35 @@
 ﻿services:
-    # lweys_api:
-    #     image: lweys_api
-    #     container_name: lweys_api
-    #     # build:
-    #        # context: ./../LWEYSWebAPI
-    #        # dockerfile: ./Dockerfile.LWEYSAPI
-    #     ports:
-    #         - 7229:8080
-    #     volumes:
-    #         - /root/docker/volumes/lweys_api/content_root_path/wwwroot:/app/wwwroot
-    #     restart: always
-    #     environment: 
-    #         - ASPNETCORE_ENVIRONMENT=Production
-    #         - CONNECTION_STRING=Server=mssqlserver;Database=LWEYS;User=sa;Password=0123654798aA@;TrustServerCertificate=True
+    lweys_api:
+        image: lweys_api
+        container_name: lweys_api
+         # build:
+            # context: ./../LWEYSWebAPI
+            # dockerfile: ./Dockerfile.LWEYSAPI
+        ports:
+            - 7229:8080
+        volumes:
+            - /root/docker/volumes/lweys_api/content_root_path/wwwroot:/app/wwwroot
+        restart: always
+        environment: 
+            - ASPNETCORE_ENVIRONMENT=Production
+            - CONNECTION_STRING=Server=mssqlserver;Database=LWEYS;User=sa;Password=0123654798aA@;TrustServerCertificate=True
+            - WEBPAGE_URL=http://lweys.online
+            - API_URL=http://103.57.222.128:7229
     lweys:
         image: lweys
         container_name: lweys
-        build:
-           context: ./../LWEYS
-           dockerfile: ./Dockerfile.LWEYS
+        # build:
+           # context: ./../LWEYS
+           # dockerfile: ./Dockerfile.LWEYS
         ports:
-            - 8800:8080
+            - 80:8080
         volumes:
             - /root/docker/volumes/lweys/content_root_path/wwwroot:/app/wwwroot
         restart: always
         environment: 
             - ASPNETCORE_ENVIRONMENT=Production
             # - CONNECTION_STRING=Server=mssqlserver;Database=LWEYS;User=sa;Password=0123654798aA@;TrustServerCertificate=True
-            - API_URL=lweys_api:7229
+            - API_URL=http://103.57.222.128:7229
     
 
     # Server=mssqlserver

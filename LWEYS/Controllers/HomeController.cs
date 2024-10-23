@@ -56,7 +56,15 @@ namespace LWEYS.Controllers
             return View(res.Data);
         }
 
-		[HttpPost]
+        public async Task<IActionResult> ProcessingPayment(int billId)
+        {
+            var res = await _orderService.ChangeServiceOrderType(billId,OrderTypeEnum.Processing);
+            if (res.IsSussess) _notyf.Success(res.Message);
+            else _notyf.Error(res.Message);
+            return RedirectToAction("ServiceOrderHistory");
+        }
+
+        [HttpPost]
 		public async Task<IActionResult> Booking(int serviceId,DateTime BookingDate)
 		{
 			if(User.Identity != null && !User.Identity.IsAuthenticated)
@@ -195,7 +203,7 @@ namespace LWEYS.Controllers
 
             billModel.Email = User.FindFirst(ClaimTypes.Email).Value;
             billModel.PhoneNumber = User.FindFirst(ClaimTypes.MobilePhone).Value;
-
+            ViewBag.ServiceId = serviceId;
             return View(billModel);
         }
 

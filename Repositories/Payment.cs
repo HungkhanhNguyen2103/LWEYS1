@@ -1,5 +1,7 @@
 ﻿using BusinessObject.BaseModel;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Crmf;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +18,6 @@ namespace Repositories
     {
         private static readonly HttpClient client = new HttpClient();
 
-        //private static string returnUrl = "https://localhost:50618/Home/PaymentStatus";
-        //private static string returnUrl = "http://103.57.222.128:8800/Home/PaymentStatus";
         private static string returnUrl = $"{Environment.GetEnvironmentVariable("WEBPAGE_URL")}/Home/PaymentStatus";
         //var env = Environment.
         public static QuickPayResquest MoMoPayment(QuickPayResquest request)
@@ -74,6 +74,36 @@ namespace Repositories
                 hashBytes = hash.ComputeHash(textBytes);
 
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        }
+    
+        public static ApiResponse QRPayment(APIRequestQR apiRequest)
+        {
+            //var noidung = "Thanh toan Lweys System";
+            string logo = "";
+
+            //apiRequest.acqId = 970423;
+            //apiRequest.accountNo = stk;
+            //apiRequest.accountName = tentaikhoan;
+            //apiRequest.amount = sotien;
+            apiRequest.logo = logo;
+            //apiRequest.format = "text";
+            //apiRequest.addInfo = noidung;
+            apiRequest.template = "compact2";
+            apiRequest.theme = "compact2";
+            var jsonRequest = JsonConvert.SerializeObject(apiRequest);
+
+            var client = new RestClient("https://api.vietqr.io/v2/generate");
+            var request = new RestRequest();
+
+            request.Method = Method.Post;
+            request.AddHeader("Accept", "application/json");
+            request.AddParameter("application/json", jsonRequest, ParameterType.RequestBody);
+
+            var response = client.Execute(request, Method.Post);
+            var content = response.Content;
+            var dataResult = JsonConvert.DeserializeObject<ApiResponse>(content);
+
+            return dataResult;
         }
     }
 }

@@ -85,8 +85,8 @@ namespace Repositories.Repository
                 FullName = c.FullName,
                 UserName = c.UserName,
                 PhoneNumber = c.PhoneNumber,
-                LockoutEnabled = c.LockoutEnabled,
-                Status = c.LockoutEnabled ? "Đang khóa" : c.EmailConfirmed ? "Đang hoạt động" : !c.EmailConfirmed ? "Chưa xác thực" : "Không hoạt động",
+                AccountActive = c.AccountActive,
+                Status = !c.AccountActive ? "Đang khóa" : c.EmailConfirmed ? "Đang hoạt động" : !c.EmailConfirmed ? "Chưa xác thực" : "Không hoạt động",
             }).ToList();
             response.IsSussess = true;
             return response;
@@ -122,7 +122,7 @@ namespace Repositories.Repository
                 responder.Message = "Tài khoản không tồn tại";
                 return responder;
             }
-            userExist.LockoutEnabled = lockAccount;
+            userExist.AccountActive = !lockAccount;
             await LWEYSDbContext.SaveChangesAsync();
             responder.IsSussess = true;
             responder.Message = lockAccount ? "Khóa thành công" : "Mở khóa thành công";
@@ -145,7 +145,7 @@ namespace Repositories.Repository
                 return responder;
             }
 
-            if (userExists.LockoutEnabled)
+            if (!userExists.AccountActive)
             {
                 responder.Message = "Tài khoản đang bị khóa. Vui lòng báo với admin";
                 return responder;
@@ -153,7 +153,7 @@ namespace Repositories.Repository
             var roles = await _userManager.GetRolesAsync(userExists);
             responder.Message = "Đăng nhập thành công";
             responder.IsSussess = true;
-            responder.Data = await EncodeSha256(userExists, string.Join(", ", roles),userExists.EmailConfirmed);
+            responder.Data = await EncodeSha256(userExists, string.Join(", ", roles),userExists.EmailConfirmed,userExists.ResetPassword);
             return responder;
         }
 
@@ -194,7 +194,8 @@ namespace Repositories.Repository
                 Address = account.Address,
                 FullName = account.FullName,
                 PhoneNumber = account.PhoneNumber,
-                LockoutEnabled = false,
+                AccountActive = true,
+                ResetPassword = 0,
             };
             var result = await _userManager.CreateAsync(user, account.Password);
             if (!result.Succeeded)
@@ -207,7 +208,7 @@ namespace Repositories.Repository
             try
             {
 				await _userManager.AddToRoleAsync(user, Role.User);
-                responder.Data = await EncodeSha256(user, Role.User,user.EmailConfirmed);
+                responder.Data = await EncodeSha256(user, Role.User,true,user.ResetPassword);
 
 
                 //Send Email 
@@ -268,7 +269,7 @@ namespace Repositories.Repository
             return responder;
         }
 
-        private async Task<string> EncodeSha256(Account user, string role,bool emailConfirm = true)
+        private async Task<string> EncodeSha256(Account user, string role,bool emailConfirm = true,int resetPassword = 0)
 		{
 			string token = string.Empty;
 			var key = _configuration["Tokens:Key"];
@@ -288,6 +289,7 @@ namespace Repositories.Repository
 			claims.Add(new Claim(ClaimTypes.Role, role == null ? "" : role));
 			claims.Add(new Claim(ClaimTypes.Name, user.FullName));
 			claims.Add(new Claim("EmailConfirm", emailConfirm.ToString()));
+			claims.Add(new Claim("ResetPassword", resetPassword.ToString()));
 			claims.Add(new Claim(ClaimTypes.Email, user.Email));
 			claims.Add(new Claim(ClaimTypes.MobilePhone, !string.IsNullOrEmpty(user.PhoneNumber) ? user.PhoneNumber : string.Empty));
 
@@ -340,6 +342,8 @@ namespace Repositories.Repository
 
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(userExist);
             var passwordChangeResult = await _userManager.ResetPasswordAsync(userExist, resetToken, newPassword);
+            userExist.ResetPassword = 1;
+            await _userManager.UpdateAsync(userExist);
             responder.IsSussess = true;
             return responder;
         }
@@ -357,6 +361,87 @@ namespace Repositories.Repository
             return new string(chars);
         }
 
+        public async Task<ReponderModel<string>> ChangePassword(AccountModel accountModel)
+        {
+            var responder = new ReponderModel<string>();
+            if (accountModel == null || 
+                string.IsNullOrEmpty(accountModel.UserName)
+                || string.IsNullOrEmpty(accountModel.OldPassword)
+                || string.IsNullOrEmpty(accountModel.Password)
+                || string.IsNullOrEmpty(accountModel.PasswordConfirm))
+            {
+                responder.Message = "Dữ liệu không hợp lệ";
+                return responder;
+            }
+            var userExist = await _userManager.FindByNameAsync(accountModel.UserName);
+            if (userExist == null)
+            {
+                responder.Message = "Tài khoản không tồn tại";
+                return responder;
+            }
+            var checkPassword = await _userManager.CheckPasswordAsync(userExist, accountModel.OldPassword);
+            if (!checkPassword)
+            {
+                responder.Message = "Mật khẩu cũ không chính xác";
+                return responder;
+            }
+            if(accountModel.Password != accountModel.PasswordConfirm)
+            {
+                responder.Message = "Mật khẩu mới không khớp";
+                return responder;
+            }
+            if (accountModel.Password == accountModel.OldPassword)
+            {
+                responder.Message = "Mật khẩu mới đã được sử dụng trước đó";
+                return responder;
+            }
+            var result = await _userManager.ChangePasswordAsync(userExist, accountModel.OldPassword, accountModel.Password);
+            if (!result.Succeeded)
+            {
+                //if (result.Errors.Count() != 0) responder.Message = result.Errors.First().Description;
+                if (result.Errors.Count() != 0) responder.Message = "Mật khẩu phải chứa số, chữ thường,chữ hoa và kí tự đặc biệt";
+                else responder.Message = "Tài khoản tạo không thành công";
+                return responder;
+            }
+            userExist.ResetPassword = 0;
+            await _userManager.UpdateAsync(userExist);
+            responder.Message = "Thay đổi thành công";
+            responder.IsSussess = true;
+            return responder;
+        }
+
+        public async Task<ReponderModel<string>> ReConfirmEmail(string username)
+        {
+            var responder = new ReponderModel<string>();
+            var userExist = await _userManager.FindByNameAsync(username);
+            if (userExist == null)
+            {
+                responder.Message = "Tài khoản không tồn tại";
+                return responder;
+            }
+            var roles = await _userManager.GetRolesAsync(userExist);
+            var token = await EncodeSha256(userExist, string.Join(", ", roles), true, userExist.ResetPassword);
+            //Send Email 
+            var template = await LWEYSDbContext.TemplateEmails.FirstOrDefaultAsync(c => c.Name == "EmailConfirm");
+            if (template == null)
+            {
+                responder.Message = "Không có dữ liệu giao diện";
+                return responder;
+            }
+            var webPageUrl = Environment.GetEnvironmentVariable("WEBPAGE_URL");
+            template.Body = !string.IsNullOrEmpty(template.Body) ? template.Body.Replace("$${EmailConfirmLink}", webPageUrl + "/Account/ConfirmSuccess?token=" + token) : string.Empty;
+            var emailModel = new EmailModel
+            {
+                Body = template.Body,
+                Subject = template.Subject,
+                To = new List<string>() { userExist.Email }
+            };
+            await _emailSender.SendEmailAsync(emailModel);
+            responder.Message = "Gửi email thành công";
+            //responder.Data = token;
+            responder.IsSussess = true;
+            return responder;
+        }
     }
 
 

@@ -24,7 +24,9 @@ namespace BusinessObject
         InUse = 1,
         Paying = 2,
         Paid = 3,
-        Cancel = 4
+        Cancel = 4,
+        Processing = 5,
+        Unsuccessful = 6
     }
 
     public static class OrderType
@@ -34,8 +36,10 @@ namespace BusinessObject
         public static string Paying = "Đang thanh toán";
         public static string Paid = "Đã thanh toán";
         public static string Cancel = "Đã hủy";
+        public static string Processing = "Đang xử lý thanh toán";
+        public static string Unsuccessful = "Không thành công";
 
-        public static List<string> ListOrderTypes = new List<string> { Booking, InUse,Paying,Paid,Cancel};
+        public static List<string> ListOrderTypes = new List<string> { Booking, InUse,Paying,Paid,Cancel, Processing , Unsuccessful };
     }
 
 

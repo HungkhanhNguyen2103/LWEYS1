@@ -39,6 +39,28 @@ namespace LWEYS.Controllers
         }
 
         [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ChangeAccount(AccountModel accountModel)
+        {
+            accountModel.UserName = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var result = await _accountService.ChangePassword(accountModel);
+            if (result.IsSussess)
+            {
+                _notyf.Success(result.Message);
+                return RedirectToAction("Logout");
+            }
+            _notyf.Error(result.Message);
+            return View();
+        }
+
+        [Authorize]
+        public IActionResult ChangeAccount()
+        {
+            return View();
+        }
+
+
+        [Authorize]
         public async Task<IActionResult> AccountInformation()
         {
             var userName = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -60,8 +82,8 @@ namespace LWEYS.Controllers
                 return RedirectToAction("AccountInformation");
             }
             _notyf.Success(result.Message);
-            //HttpContext.Response.Cookies.Append("token", result.Data, new CookieOptions { MaxAge = TimeSpan.FromMinutes(45) });
-            return RedirectToAction("Logout");
+            HttpContext.Response.Cookies.Append("token", result.Data, new CookieOptions { MaxAge = TimeSpan.FromMinutes(45) });
+            return RedirectToAction("VerifyToken");
         }
 
         [AllowAnonymous]
@@ -97,6 +119,20 @@ namespace LWEYS.Controllers
         {
             return View();
         }
+
+        [Authorize]
+        public async Task<IActionResult> EmailReConfirm()
+        {
+            var userName = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var result = await _accountService.ReConfirmEmail(userName);
+            if (!result.IsSussess)
+            {
+                _notyf.Error(result.Message);
+            }
+            //else _notyf.Error(result.Message);
+            return RedirectToAction("EmailConfirm");
+        }
+
         public IActionResult Register()
 		{
             if (User.Identity.IsAuthenticated)

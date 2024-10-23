@@ -4,6 +4,7 @@ using BusinessObject;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(LWEYSDbContext))]
-    partial class LWEYSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023040512_addColumn-ResetPassword")]
+    partial class addColumnResetPassword
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,9 +48,6 @@ namespace BusinessObject.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<bool>("AccountActive")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
@@ -122,18 +122,17 @@ namespace BusinessObject.Migrations
                         {
                             Id = "7d5002bd-f22f-4c7c-bce1-3d22eed213ff",
                             AccessFailedCount = 0,
-                            AccountActive = false,
-                            ConcurrencyStamp = "f168ae3d-ff64-4161-a7e0-910bff2f41ac",
+                            ConcurrencyStamp = "cfaeb268-c916-420c-981f-8609be5e4385",
                             Email = "admin@gmail.com",
                             EmailConfirmed = false,
                             FullName = "Admin",
                             Gender = 0,
                             LockoutEnabled = false,
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEpYbWwcJyGyrRzeOWQv/VOWt9f9yZugpHKBLdQl/qXDIuJ5mteD7DhJwhnJwmusGw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIMu3M5Ax+03zdjebTArXJq1J9FsTsxGLlsbl5STMp+0v9erJo9O6iphuxeVd8vj8g==",
                             PhoneNumberConfirmed = false,
                             ResetPassword = 0,
-                            SecurityStamp = "abce34eb-c346-467d-a28a-8bca9c1edc33",
+                            SecurityStamp = "582567f2-3d46-40dc-a68b-78148dcb7815",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         },
@@ -141,18 +140,17 @@ namespace BusinessObject.Migrations
                         {
                             Id = "7d5002bd-f22f-4c7c-bce1-3d22eff321ef",
                             AccessFailedCount = 0,
-                            AccountActive = false,
-                            ConcurrencyStamp = "9846d2d4-05b5-41f8-a8ee-f7d8d5b77a7a",
+                            ConcurrencyStamp = "f7da7bec-1bf7-42b8-b932-562e54eb0547",
                             Email = "staff@gmail.com",
                             EmailConfirmed = false,
                             FullName = "Staff",
                             Gender = 0,
                             LockoutEnabled = false,
                             NormalizedUserName = "STAFF",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIz2C3aImtNknnkVAmAfNCsAYBl8VQw1aAFqAG9hZpktqlXq8Rug312cNxNYCeIfVw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEH1OQEAIBSyhNZqgodcHQ67f1j3av1WhrcwQ15NfqYSFDcaSYXy54WjJ0g1n4GltuQ==",
                             PhoneNumberConfirmed = false,
                             ResetPassword = 0,
-                            SecurityStamp = "a4ca1424-9e1d-4c39-9d40-79d08162da1c",
+                            SecurityStamp = "5c15c7c8-1ee9-4ab3-af06-f494bfa4d873",
                             TwoFactorEnabled = false,
                             UserName = "staff"
                         });

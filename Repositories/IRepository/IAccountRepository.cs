@@ -16,7 +16,9 @@ namespace Repositories.Repository
         Task<ReponderModel<string>> ToggleLockUser(string username,bool lockAccount);
         Task<ReponderModel<string>> GrantAccessRole(string username);
         Task<ReponderModel<string>> ForgotPassword(string email);
+        Task<ReponderModel<string>> ChangePassword(AccountModel accountModel);
         Task<ReponderModel<string>> ConfirmEmail(string? token);
+        Task<ReponderModel<string>> ReConfirmEmail(string? username);
 
         Task<ReponderModel<AccountModel>> GetInformation(string username);
         Task<ReponderModel<string>> UpdateInformation(AccountModel account);

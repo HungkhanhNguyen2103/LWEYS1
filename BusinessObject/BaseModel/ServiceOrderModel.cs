@@ -15,6 +15,8 @@ namespace BusinessObject.BaseModel
         public string? OrderDate { get; set; }
         public string? UserName { get; set; }
         public string? FullName { get; set; }
+        public string? PhoneNumber { get; set; }
         public bool IsRating { get; set; }
+        public long Price { get; set; }
     }
 }

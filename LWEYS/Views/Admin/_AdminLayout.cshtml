@@ -44,7 +44,7 @@
         {
             <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
                 <ul class="navbar-nav">
-                    @if (claims.IsInRole("Staff") || claims.IsInRole("Admin"))
+                    @if (claims.IsInRole("Admin"))
                     {
                         <li class="nav-item">
                             <a class="nav-link text-white " id="DashboardId" href="/Admin">
@@ -155,6 +155,7 @@
                         </button>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="/Account/AccountInformation">Thông tin cá nhân</a>
+                            <a class="dropdown-item" href="/Account/ChangeAccount">Đổi mật khẩu</a>
                             <a class="dropdown-item" href="/Account/Logout">Đăng xuất</a>
                         </div>
                     </div>

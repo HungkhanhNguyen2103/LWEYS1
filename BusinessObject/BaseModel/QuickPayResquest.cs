@@ -32,4 +32,5 @@ namespace BusinessObject.BaseModel
         public string payUrl { get; set; }
 
     }
+
 }

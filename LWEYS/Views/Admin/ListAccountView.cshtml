@@ -73,7 +73,7 @@
                                             <span class="text-secondary text-xs font-weight-bold">@item.Status</span>
                                         </td>
                                         <td class="align-middle">
-                                            @if (item.LockoutEnabled)
+                                            @if (!item.AccountActive)
                                             {
                                                 <a href="javascript:;" onclick="inactive('@item.UserName','false')" class="text-secondary font-weight-bold text-xs">
                                                     Mở khóa tài khoản

@@ -16,7 +16,7 @@
     {
         <div class="card @(index++) @(index % 2 != 0 ? "basic" : "standard")">
             <h3>@item.ServicePackage:</h3>
-            <p class="price"><span>VND</span> @item.Amount.ToString("#,###", cul.NumberFormat)<span>/hour</span></p>
+            <p class="price"><span></span> @item.Amount.ToString("#,###", cul.NumberFormat)<span> VNĐ</span></p>
             <p class="description">@item.Name</p>
             <button onclick="window.location.href='/Home/ServiceDetailView/@item.Id'" class="card-button">Đặt lịch</button>
         </div>

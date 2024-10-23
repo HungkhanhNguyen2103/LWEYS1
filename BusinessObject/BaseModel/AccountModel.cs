@@ -9,6 +9,7 @@ namespace BusinessObject.BaseModel
     public class AccountModel
     {
         public string? UserName { get; set; }
+        public string? OldPassword { get; set; }
         public string? Password { get; set; }
         public string? PasswordConfirm { get; set; }
         public string? FullName { get; set; }
@@ -18,6 +19,7 @@ namespace BusinessObject.BaseModel
         public string? PhoneNumber { get; set; }
         public string? Status { get; set; }
         public string? ReturnUrl { get; set; }
+        public bool AccountActive { get; set; }
     }
 
     public class AccountViewModel : AccountModel

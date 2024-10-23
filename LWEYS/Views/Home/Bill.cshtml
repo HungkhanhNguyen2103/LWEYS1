@@ -1,5 +1,7 @@
-﻿@{
+﻿@using System.Globalization
+@{
     Layout = null;
+    CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
 }
 @model BillModel
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
@@ -9,6 +11,7 @@
         return Xsrf.GetAndStoreTokens(Context).RequestToken;
     }
 }
+<link rel="icon" type="image/png" href="~/images/layoutHome/logo.png" asp-append-version="true">
 <link rel="stylesheet" href="~/css/bill.css" asp-append-version="true">
 <title>Thông tin hóa đơn</title>
 <header class="top-bar align-center">
@@ -20,103 +23,112 @@
     <main class="columns">
         <div class="inner-container">
             <header class="row align-center">
+                <input value="@Model.ServiceOrderHistoryModel.Id" hidden id="ServiceOrderHistoryModelId" />
                 <a href="/Home/ServiceOrderHistory" class="button hollow secondary">Trở về</a>
-                &nbsp;&nbsp;<a class="button" onclick="paymentItem(@Model.ServiceOrderHistoryModel.Id)">Thanh toán Momo</a>
+                &nbsp;&nbsp;<a class="button" onclick="window.location.href='/Home/ProcessingPayment?billId=@ViewBag.ServiceId'">Hoàn tất thanh toán</a>
             </header>
-            <section class="row align-center">
-                <div class="callout large invoice-container">
-                    <table class="invoice">
-                        <tr class="header">
-                            <td class="">
-                                <img style="width:50px" src="~/images/layoutHome/logo.png" alt="Company Name" />
-                            </td>
-                            <td class="align-right">
-                                <h2>Hóa đơn</h2>
-                            </td>
-                        </tr>
-                        <tr class="intro">
-                            <td class="">
-                                Xin chào, @User.Identity.Name.<br>
-                                Cảm ơn đã sử dụng dịch vụ của chúng tôi.
-                            </td>
-                            <td class="text-right">
-                                <span class="num">Order #@Model.ServiceOrderHistoryModel.Id</span><br>
-                                @DateTime.Now.ToShortDateString()
-                            </td>
-                        </tr>
-                        <tr class="details">
-                            <td colspan="2">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th class="desc">Dịch vụ</th>
-                                            <th class="id">Loại dịch vụ</th>
-                                            <th class="amt">Tổng</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="item">
-                                            <td class="desc">@Model.ServiceOrderHistoryModel.ServicePackage</td>
-                                            <td class="id num">@Model.ServiceOrderHistoryModel.ServiceType</td>
-                                            <td class="amt">@Model.ServiceOrderHistoryModel.Price vnđ</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr class="totals">
-                            <td></td>
-                            <td>
-                                <table>
-@*                                     <tr class="subtotal">
+            <div class="">
+                <section class="row align-center">
+                    <div class="callout large invoice-container">
+                        <table class="invoice">
+                            <tr class="header">
+                                <td class="">
+                                    <img style="width:50px" src="~/images/layoutHome/logo.png" alt="Company Name" />
+                                </td>
+                                <td class="align-right">
+                                    <h2>Hóa đơn</h2>
+                                </td>
+                            </tr>
+                            <tr class="intro">
+                                <td class="">
+                                    Xin chào, @User.Identity.Name.<br>
+                                    Cảm ơn đã sử dụng dịch vụ của chúng tôi.
+                                </td>
+                                <td class="text-right">
+                                    <span class="num">Order #@Model.ServiceOrderHistoryModel.Id</span><br>
+                                    @DateTime.Now.ToShortDateString()
+                                </td>
+                            </tr>
+                            <tr class="details">
+                                <td colspan="2">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th class="desc">Dịch vụ</th>
+                                                <th class="id">Loại dịch vụ</th>
+                                                <th class="amt">Tổng</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="item">
+                                                <td class="desc">@Model.ServiceOrderHistoryModel.ServicePackage</td>
+                                                <td class="id num">@Model.ServiceOrderHistoryModel.ServiceType</td>
+                                                <td class="amt">@Model.ServiceOrderHistoryModel.Price.ToString("#,###", cul.NumberFormat) vnđ</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr class="totals">
+                                <td></td>
+                                <td>
+                                    <table>
+                                        @*                                     <tr class="subtotal">
                                         <td class="num">Subtotal</td>
                                         <td class="num">$100.00</td>
-                                    </tr>
-                                    <tr class="fees">
+                                        </tr>
+                                        <tr class="fees">
                                         <td class="num">Shipping & Handling</td>
                                         <td class="num">$0.00</td>
-                                    </tr>
-                                    <tr class="tax">
+                                        </tr>
+                                        <tr class="tax">
                                         <td class="num">Tax (7%)</td>
                                         <td class="num">$7.00</td>
-                                    </tr> *@
-                                    <tr class="total">
-                                        <td>Tổng cộng</td>
-                                        <td>@Model.ServiceOrderHistoryModel.Price vnđ</td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
+                                        </tr> *@
+                                        <tr class="total">
+                                            <td>Tổng cộng</td>
+                                            <td>@Model.ServiceOrderHistoryModel.Price.ToString("#,###", cul.NumberFormat) vnđ</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
 
-                    <section class="additional-info">
-                        <div class="row">
-                            <div class="columns">
-                                <h5>Thông tin hóa đơn</h5>
-                                <p>
-                                    @User.Identity.Name<br>
-                                    @Model.PhoneNumber<br>
-                                    @Model.Email<br>
-                                </p>
+                        <section class="additional-info">
+                            <div class="row">
+                                <div class="columns">
+                                    <h5>Thông tin hóa đơn</h5>
+                                    <p>
+                                        @User.Identity.Name<br>
+                                        @Model.PhoneNumber<br>
+                                        @Model.Email<br>
+                                    </p>
+                                </div>
+                                <div class="columns">
+                                    <h5>Thông tin thanh toán</h5>
+                                    <p>
+                                        @*                                     Momo<br>
+                                        Loại: Momo Payment<br> *@
+@*                                         VietQr<br>
+                                        Loại: VietQr Payment<br> *@
+                                        <img style="width:12rem" id="payment-qr" src="" />
+                                    </p>
+                                </div>
                             </div>
-                            <div class="columns">
-                                <h5>Thông tin thanh toán</h5>
-                                <p>
-                                    Momo<br>
-                                    Loại: Momo Payment<br>
-                                </p>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-            </section>
+                        </section>
+                    </div>
+                </section>
+            </div>
+
         </div>
     </main>
 </div>
 <script src="~/lib/jquery/dist/jquery.js" asp-append-version="true"></script>
 <script>
+    var id = document.getElementById("ServiceOrderHistoryModelId").value;
+    paymentItem(id);
     function paymentItem(id) {
-        if (confirm("Bạn muốn thanh toán ?") == false) return;
+        //if (confirm("Bạn muốn thanh toán ?") == false) return;
         var formData = new FormData();
         formData.append("id", id)
         $.ajax(
@@ -133,11 +145,12 @@
                 processData: false,
                 contentType: false,
                 success: function (result) {
-                    if (result.isSussess == false){
-                        alert(result.message);
-                        return;
-                    }
-                    window.location.href = result.data;
+                    // if (result.isSussess == false){
+                    //     alert(result.message);
+                    //     return;
+                    // }
+                    // window.location.href = result.data;
+                    document.getElementById("payment-qr").src = result.data;
                 }
             }
         );

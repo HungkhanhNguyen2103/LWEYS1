@@ -12,6 +12,8 @@
         public static string ACCOUNT_TOGGLE_LOCK_USER = "api/Account/ToggleLockUser";
         public static string ACCOUNT_ACCESS_ROLE = "api/Account/GrantAccessRole";
         public static string ACCOUNT_FORGOT_PASSWORD = "api/Account/ForgotPassword";
+        public static string ACCOUNT_CHANGE_PASSWORD = "api/Account/ChangePassword";
+        public static string ACCOUNT_RE_CONFIRM_EMAIL = "api/Account/ReConfirmEmail";
 
         //Post Category
         public static string POSTCATEGORY_GETALL = "api/PostCategory/GetAll";

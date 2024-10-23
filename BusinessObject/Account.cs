@@ -14,5 +14,7 @@ namespace BusinessObject
         public string? FullName { get; set; }
         public int Gender { get; set; }
         public string? Address { get; set; }
+        public int ResetPassword { get; set; }
+        public bool AccountActive { get; set; }
     }
 }

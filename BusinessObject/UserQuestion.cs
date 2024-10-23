@@ -13,11 +13,11 @@ namespace BusinessObject
         [Column(TypeName = "nvarchar(100)")]
         public string? FullName { get; set; }
         public string? Email { get; set; }
-        [Column(TypeName = "nvarchar(255)")]
+        [Column(TypeName = "nvarchar(MAX)")]
         public string? Message { get; set; }
         public string? UserName { get; set; }
         public string? AdminUserName { get; set; }
-        [Column(TypeName = "nvarchar(255)")]
+        [Column(TypeName = "nvarchar(MAX)")]
         public string? AdminMessage { get; set; }
     }
 }

@@ -45,6 +45,13 @@ namespace LWEYSWebAPI.Controllers
             return rs;
         }
 
+        [Route("ChangePassword")]
+        [HttpPost]
+        public async Task<ReponderModel<string>> ChangePassword(AccountModel model)
+        {
+            var rs = await _accountRepository.ChangePassword(model);
+            return rs;
+        }
 
         [Route("Login")]
         [HttpPost]
@@ -67,6 +74,14 @@ namespace LWEYSWebAPI.Controllers
         public async Task<ReponderModel<string>> ForgotPassword(AccountModel model)
         {
             var rs = await _accountRepository.ForgotPassword(model.Email);
+            return rs;
+        }
+
+        [Route("ReConfirmEmail")]
+        [HttpPost]
+        public async Task<ReponderModel<string>> ReConfirmEmail(AccountModel model)
+        {
+            var rs = await _accountRepository.ReConfirmEmail(model.UserName);
             return rs;
         }
 

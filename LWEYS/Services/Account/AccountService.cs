@@ -190,6 +190,46 @@ namespace LWEYS.Services.Account
             }
             return res;
         }
-        
+
+        public async Task<ReponderModel<string>> ChangePassword(AccountModel accountModel)
+        {
+            var res = new ReponderModel<string>();
+            if (accountModel == null)
+            {
+                res.Message = "Thông tin không hợp lệ!";
+                return res;
+            }
+            try
+            {
+                string url = PathUrl.ACCOUNT_CHANGE_PASSWORD;
+                res = await _api.Post<ReponderModel<string>>(url, accountModel);
+
+            }
+            catch (Exception ex)
+            {
+                res.Message = "Lỗi gọi api!";
+            }
+            return res;
+        }
+
+        public async Task<ReponderModel<string>> ReConfirmEmail(string username)
+        {
+            var res = new ReponderModel<string>();
+            try
+            {
+                var model = new AccountModel
+                {
+                    UserName = username
+                };
+                string url = PathUrl.ACCOUNT_RE_CONFIRM_EMAIL;
+                res = await _api.Post<ReponderModel<string>>(url, model);
+
+            }
+            catch (Exception ex)
+            {
+                res.Message = "Lỗi gọi api!";
+            }
+            return res;
+        }
     }
 }

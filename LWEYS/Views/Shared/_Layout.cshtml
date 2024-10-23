@@ -8,6 +8,13 @@
     {
         ViewContext.HttpContext.Response.Redirect("/Account/VerifyToken");
     }
+    else if (User.Identity.IsAuthenticated)
+    {
+        if (User.FindFirst("ResetPassword").Value == "1")
+        {
+            ViewContext.HttpContext.Response.Redirect("/Account/ChangeAccount");
+        }
+    }
 }
 <!DOCTYPE html>
 <html lang="vi">
@@ -41,8 +48,14 @@
                     <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                         @User.Identity.Name
                     </button>
-                    <div style="left:-5rem" class="dropdown-menu">
+                    <div style="right:30px;position:fixed" class="dropdown-menu">
+                        @if (bool.Parse(User.FindFirst("EmailConfirm").Value) == false)
+                        {
+                            <a style="color:#ff0000b0;font-weight:700" class="dropdown-item" href="/Account/EmailReConfirm"><div class="d-flex" style="align-items:center"><i style="font-size:9px;margin-right:5px" class="fas fa-circle"></i> Xác thực thông tin </div></a>
+                            <hr style="margin:5px 0"/>
+                        }
                         <a class="dropdown-item" href="/Account/AccountInformation">Thông tin cá nhân</a>
+                        <a class="dropdown-item" href="/Account/ChangeAccount">Đổi mật khẩu</a>
                         <a class="dropdown-item" href="/Home/UserQuestionListView">Câu hỏi người dùng</a>
                         <a class="dropdown-item" href="/Home/ServiceOrderHistory">Lịch sử đặt dịch vụ</a>
                         <a class="dropdown-item" href="/Account/Logout">Đăng xuất</a>

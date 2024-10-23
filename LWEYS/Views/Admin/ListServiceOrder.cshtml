@@ -31,6 +31,8 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Đặt lịch</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Trạng thái</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Khách hàng</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">SĐT</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Giá</th>                     
                                 <th class="text-secondary opacity-7"></th>
                             </tr>
                         </thead>
@@ -54,7 +56,17 @@
                                         <span class="text-secondary text-xs font-weight-bold">@item.FullName - (@item.UserName)</span>
                                     </td>
                                     <td class="align-middle">
-                                        <a href="javascript:;" onclick="showPopup(@item.ServiceOrderId,'@item.OrderDate')" data-toggle="modal" data-target="#exampleModal" class="@(item.OrderTypeEnum == OrderTypeEnum.Cancel || item.OrderTypeEnum == OrderTypeEnum.Paid ? "d-none" : "") text-secondary font-weight-bold text-xs">
+                                        <span class="text-secondary text-xs font-weight-bold">@item.PhoneNumber</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        @if (item.Price != 0)
+                                        {
+                                            <span class="text-secondary text-xs font-weight-bold">@item.Price</span>
+                                        }
+                                    </td>
+
+                                    <td class="align-middle">
+                                        <a href="javascript:;" onclick="showPopup(@item.ServiceOrderId,'@item.OrderDate')" data-toggle="modal" data-target="#exampleModal" class="@(item.OrderTypeEnum == OrderTypeEnum.Cancel || item.OrderTypeEnum == OrderTypeEnum.Paid || item.OrderTypeEnum == OrderTypeEnum.Unsuccessful ? "d-none" : "") text-secondary font-weight-bold text-xs">
                                             Thay đổi trạng thái
                                         </a>
                                         <a href="javascript:;" onclick="paymentItem(@item.ServiceOrderId)" class="@(item.OrderTypeEnum == OrderTypeEnum.InUse ? "" : "d-none") mx-3 text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit">
@@ -88,6 +100,8 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" onclick="changeOrderType(3)" class="btn btn-primary">Đã thanh toán</button>
+                <button type="button" onclick="changeOrderType(6)" class="btn btn-primary">Thanh toán thất bại</button>
                 <button type="button" onclick="changeOrderType(1)" class="btn btn-primary">Sử dụng dịch vụ</button>
                 <button type="button" onclick="changeOrderType(4)" class="btn btn-primary">Hủy dịch vụ</button>
             </div>

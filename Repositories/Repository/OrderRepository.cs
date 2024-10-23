@@ -3,6 +3,7 @@ using BusinessObject;
 using BusinessObject.BaseModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Repositories.IRepository;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,12 @@ namespace Repositories.Repository
     {
         private readonly LWEYSDbContext LWEYSDbContext;
         private readonly UserManager<Account> _userManager;
-        public OrderRepository(LWEYSDbContext lWEYSDbContext, UserManager<Account> userManager)
+        private readonly IConfiguration _configuration;
+        public OrderRepository(LWEYSDbContext lWEYSDbContext, UserManager<Account> userManager, IConfiguration configuration)
         {
             LWEYSDbContext = lWEYSDbContext;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         public async Task<ReponderModel<string>> Booking(ServiceOrder serviceOrder)
@@ -66,6 +69,7 @@ namespace Repositories.Repository
 
         public async Task<ReponderModel<string>> ChangeServiceOrderType(int id, OrderTypeEnum orderType)
         {
+            var message = "Thay đổi thành công";
             var response = new ReponderModel<string>();
             var rs = await LWEYSDbContext.ServiceOrders.Include(c => c.Service).FirstOrDefaultAsync(c => c.Id == id);
             if (rs == null)
@@ -78,8 +82,9 @@ namespace Repositories.Repository
             if(orderType == OrderTypeEnum.Paying)
             {
                 var orderDateEnd = DateTime.Now;
-                var amount = (orderDateEnd - rs.OrderDate).Hours;
-                if (amount < 1) amount = 1;
+                //var amount = (orderDateEnd - rs.OrderDate).Hours;
+                //if (amount < 1) amount = 1;
+                var amount = 1;
                 var item = new ServiceOrderHistory
                 {
                     CreateTime = orderDateEnd,
@@ -91,9 +96,14 @@ namespace Repositories.Repository
                 await LWEYSDbContext.ServiceOrderHistories.AddAsync(item);
             }
 
+            if(orderType == OrderTypeEnum.Processing)
+            {
+                message = "Hóa đơn đang được xử lý";
+            }
+
             await LWEYSDbContext.SaveChangesAsync();
             response.IsSussess = true;
-            response.Message = "Thay đổi thành công";
+            response.Message = message;
             return response;
         }
 
@@ -164,8 +174,11 @@ namespace Repositories.Repository
                 ServiceType = c.Service.ServiceType == ServiceType.Offline ? ServiceTypeCls.Offline : ServiceTypeCls.Online,
                 OrderDate = c.OrderDate.ToString("dd-MM-yyyy HH:mm"),
                 FullName = LWEYSDbContext.Users.FirstOrDefault(x => x.UserName == c.UserName).FullName,
+                PhoneNumber = LWEYSDbContext.Users.FirstOrDefault(x => x.UserName == c.UserName).PhoneNumber,
                 OrderType = OrderType.ListOrderTypes[(int)c.OrderType],
                 IsRating = LWEYSDbContext.ServiceOrderHistories.FirstOrDefault(x => x.ServiceOrderId == c.Id) == null ? false : LWEYSDbContext.ServiceOrderHistories.FirstOrDefault(x => x.ServiceOrderId == c.Id).IsRating,
+                Price = LWEYSDbContext.ServiceOrderHistories.FirstOrDefault(x => x.ServiceOrderId == c.Id) == null ? 0 : LWEYSDbContext.ServiceOrderHistories.FirstOrDefault(x => x.ServiceOrderId == c.Id).Price
+
             }).ToListAsync();
             response.DataList = listResult;
             response.IsSussess = true;
@@ -257,18 +270,32 @@ namespace Repositories.Repository
                 response.Message = "Data không hợp lệ";
                 return response;
             }
-            var momoPaymentUrl = Payment.MoMoPayment(new QuickPayResquest
+
+            //Momo Payment
+            //var momoPaymentUrl = Payment.MoMoPayment(new QuickPayResquest
+            //{
+            //    amount = rs.Price,
+            //    extraData = rs.Id.ToString(),
+            //});
+            //if(momoPaymentUrl.resultCode != 0)
+            //{
+            //    response.Message = momoPaymentUrl.message;
+            //    return response;
+            //}
+            //response.Data = momoPaymentUrl.shortLink;
+            //response.Message = "Chuyển hướng thanh toán";
+            //QR Payment
+            var apiRequest = new APIRequestQR
             {
-                amount = rs.Price,
-                extraData = rs.Id.ToString(),
-            });
-            if(momoPaymentUrl.resultCode != 0)
-            {
-                response.Message = momoPaymentUrl.message;
-                return response;
-            }
-            response.Data = momoPaymentUrl.shortLink;
-            response.Message = "Chuyển hướng thanh toán";
+                accountNo = _configuration["BankingSettings:AccountNumber"],
+                amount = Convert.ToInt32(rs.Price),
+                accountName = _configuration["BankingSettings:AccountName"],
+                acqId = int.Parse(_configuration["BankingSettings:AcqId"]),
+                addInfo = "Mã đơn hàng: " + rs.Id.ToString(),
+            };
+            var paymentUrl = Payment.QRPayment(apiRequest);
+
+            response.Data = paymentUrl.data.qrDataURL;
             response.IsSussess = true;
             return response;
         }

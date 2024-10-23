@@ -338,11 +338,18 @@ namespace Repositories.Repository
                 Subject = template.Subject,
                 To = new List<string>() { email }
             };
-            await _emailSender.SendEmailAsync(emailModel);
+
+            userExist.ResetPassword = 1;
 
             string resetToken = await _userManager.GeneratePasswordResetTokenAsync(userExist);
             var passwordChangeResult = await _userManager.ResetPasswordAsync(userExist, resetToken, newPassword);
-            userExist.ResetPassword = 1;
+            if (!passwordChangeResult.Succeeded)
+            {
+                if (passwordChangeResult.Errors.Count() != 0) responder.Message = passwordChangeResult.Errors.First().Description;
+                else responder.Message = "Lỗi máy chủ";
+                return responder;
+            }
+            await _emailSender.SendEmailAsync(emailModel);
             await _userManager.UpdateAsync(userExist);
             responder.IsSussess = true;
             return responder;

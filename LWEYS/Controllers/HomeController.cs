@@ -156,7 +156,7 @@ namespace LWEYS.Controllers
             return View();
         }
 
-        [Authorize(Roles = Role.User)]
+        [Authorize]
         public async Task<IActionResult> ServiceOrderHistory()
         {
             var userName = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -165,7 +165,7 @@ namespace LWEYS.Controllers
 
         }
 
-        [Authorize(Roles = Role.User)]
+        [Authorize]
         public async Task<IActionResult> UserQuestionListView()
         {
             var userName = User.FindFirst(ClaimTypes.NameIdentifier).Value;

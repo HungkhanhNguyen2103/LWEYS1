@@ -357,15 +357,37 @@ namespace Repositories.Repository
 
         private string CreateRandomPassword(int length = 15)
         {
-            string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*?_-";
-            Random random = new Random();
-
-            char[] chars = new char[length];
-            for (int i = 0; i < length; i++)
+            string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            string lower = "abcdefghijklmnopqrstuvwxyz";
+            string character = "!-_*+&$";
+            string number = "0123456789";
+            Random _rnd = new Random();
+            string[] keys = new string[] { upper, lower, character, number };
+            var chars = new char[length];
+            for (int i = 0; i < keys.Length; i++)
             {
-                chars[i] = validChars[random.Next(0, validChars.Length)];
+                var key = keys[i];
+                chars[i] = key[_rnd.Next(key.Length)];
             }
-            return new string(chars);
+
+            for (int i = keys.Length; i < length; i++)
+            {
+                var indexKeys = _rnd.Next(keys.Length);
+                var key = keys[indexKeys];
+                chars[i] = key[_rnd.Next(key.Length)];
+            }
+
+            return new string(chars.OrderBy(x => Guid.NewGuid()).ToArray());
+
+            //string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*?_-";
+            //Random random = new Random();
+
+            //char[] chars = new char[length];
+            //for (int i = 0; i < length; i++)
+            //{
+            //    chars[i] = validChars[random.Next(0, validChars.Length)];
+            //}
+            //return new string(chars);
         }
 
         public async Task<ReponderModel<string>> ChangePassword(AccountModel accountModel)

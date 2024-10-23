@@ -1,4 +1,22 @@
-﻿<!doctype html>
+﻿@{
+	var jwtToken = ViewContext.HttpContext.Request.Cookies["token"];
+	if (string.IsNullOrEmpty(jwtToken) && User.Identity.IsAuthenticated)
+	{
+		ViewContext.HttpContext.Response.Redirect("/Account/Logout");
+	}
+	else if (!string.IsNullOrEmpty(jwtToken) && !User.Identity.IsAuthenticated)
+	{
+		ViewContext.HttpContext.Response.Redirect("/Account/VerifyToken");
+	}
+	else if (User.Identity.IsAuthenticated && string.IsNullOrEmpty(jwtToken))
+	{
+		if (User.FindFirst("ResetPassword").Value == "1")
+		{
+			ViewContext.HttpContext.Response.Redirect("/Account/ChangeAccount");
+		}
+	}
+}
+<!doctype html>
 <html lang="en">
 <head>
 	<title>LWEYS Management</title>

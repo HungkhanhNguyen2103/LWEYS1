@@ -155,6 +155,8 @@ namespace LWEYS.Controllers
             ViewBag.ListAccount = result.DataList;
             ViewBag.SelectedRole = role;
             ViewBag.IsCustomer = role == Role.User ? true : false;
+            ViewBag.IsStaff = role == Role.Staff ? true : false;
+            ViewBag.IsAdmin = role == Role.Admin ? true : false; 
             return View();
         }
 
@@ -168,9 +170,9 @@ namespace LWEYS.Controllers
         [HttpPost]
 
         [Authorize(Roles = Role.Admin)]
-        public async Task<IActionResult> GrantAccessRole(string username)
+        public async Task<IActionResult> GrantAccessRole(string username,int grant)
         {
-            var result = await _accountService.GrantAccessRole(new AccountModel { UserName = username});
+            var result = await _accountService.GrantAccessRole(new AccountModel { UserName = username,GrantPermission = grant});
             return Json(result.Message);
         }
 

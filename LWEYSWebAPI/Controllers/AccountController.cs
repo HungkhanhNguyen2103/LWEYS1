@@ -65,7 +65,7 @@ namespace LWEYSWebAPI.Controllers
         [HttpPost]
         public async Task<ReponderModel<string>> GrantAccessRole(AccountModel model)
         {
-            var rs = await _accountRepository.GrantAccessRole(model.UserName);
+            var rs = await _accountRepository.GrantAccessRole(model.UserName,model.GrantPermission);
             return rs;
         }
 

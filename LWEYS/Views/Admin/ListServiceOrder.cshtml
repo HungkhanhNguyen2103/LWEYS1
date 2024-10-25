@@ -1,6 +1,8 @@
-﻿@{
+﻿@using System.Globalization
+@{
     Layout = "~/Views/Admin/_AdminLayout.cshtml";
     ViewData["Title"] = "Đặt dịch vụ";
+    CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
 }
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf
 @functions {
@@ -22,8 +24,8 @@
                 </div>
             </div>
             <div class="card-body px-0 pb-2">
-                <div class="table-responsive p-0">
-                    <table class="table align-items-center mb-0">
+                <div class="table-responsive p-0" style="padding-left:2rem !important;padding-right:2rem !important">
+                    <table id="myTable" class="table align-items-center mb-0">
                         <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Dịch vụ</th>
@@ -61,7 +63,7 @@
                                     <td class="align-middle">
                                         @if (item.Price != 0)
                                         {
-                                            <span class="text-secondary text-xs font-weight-bold">@item.Price</span>
+                                            <span class="text-secondary text-xs font-weight-bold">@item.Price.ToString("#,###", cul.NumberFormat)</span>
                                         }
                                     </td>
 
@@ -108,7 +110,31 @@
         </form>
     </div>
 </div>
+<script src="~/lib/jquery/dist/jquery.js" asp-append-version="true"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js" asp-append-version="true"></script>
 <script type="text/javascript">
+    new DataTable('#myTable', {
+        initComplete: function () {
+            this.api()
+                .columns()
+                .every(function () {
+                    let column = this;
+                    let title = column.footer().textContent;
+
+                    // Create input element
+                    let input = document.createElement('input');
+                    input.placeholder = title;
+                    column.footer().replaceChildren(input);
+
+                    // Event listener for user input
+                    input.addEventListener('keyup', () => {
+                        if (column.search() !== this.value) {
+                            column.search(input.value).draw();
+                        }
+                    });
+                });
+        }
+    });
     document.getElementById('ListServiceOrderId').classList.add('active');
     
     function showPopup(id,date) {

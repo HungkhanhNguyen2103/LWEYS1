@@ -33,15 +33,15 @@ namespace Repositories.Repository
                 response.Message = "Dữ liệu không hợp lệ";
                 return response;
             }
-            if(serviceOrder.OrderDate < DateTime.Now.AddMinutes(30))
+            if (serviceOrder.OrderDate.Hour < 8 || serviceOrder.OrderDate.Hour > 20)
             {
-                response.Message = "Lịch đặt phải sau 30 phút";
+                response.Message = "Ngoài thời gian hoạt động (Từ 8h sáng đến 20h tối)";
                 return response;
             }
 
-            if (serviceOrder.OrderDate.Hour < 8 || serviceOrder.OrderDate.Hour > 20)
+            if (serviceOrder.OrderDate < DateTime.Now.AddMinutes(30))
             {
-                response.Message = "Ngoài thời gian hoạt động";
+                response.Message = "Lịch đặt phải sau 30 phút";
                 return response;
             }
             await LWEYSDbContext.ServiceOrders.AddAsync(serviceOrder);
@@ -78,6 +78,12 @@ namespace Repositories.Repository
                 return response;
             }
             rs.OrderType = orderType;
+
+            if(orderType == OrderTypeEnum.Paid)
+            {
+                response = await PaymentOrder(id);
+                return response;
+            }
 
             if(orderType == OrderTypeEnum.Paying)
             {
@@ -247,7 +253,7 @@ namespace Repositories.Repository
         public async Task<ReponderModel<string>> PaymentOrder(int id)
         {
             var response = new ReponderModel<string>();
-            var rs = await LWEYSDbContext.ServiceOrderHistories.Include(c => c.ServiceOrder).FirstOrDefaultAsync(c => c.Id == id);
+            var rs = await LWEYSDbContext.ServiceOrderHistories.Include(c => c.ServiceOrder).FirstOrDefaultAsync(c => c.ServiceOrder != null  && c.ServiceOrder.Id == id);
             if (rs == null || rs.ServiceOrder == null)
             {
                 response.Message = "Data không hợp lệ";

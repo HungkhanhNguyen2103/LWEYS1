@@ -298,7 +298,7 @@ namespace Repositories.Repository
 			return await Task.FromResult(token);
 		}
 
-        public async Task<ReponderModel<string>> GrantAccessRole(string username)
+        public async Task<ReponderModel<string>> GrantAccessRole(string username,int grade)
         {
             var responder = new ReponderModel<string>();
             var userExist = await _userManager.FindByNameAsync(username);
@@ -307,9 +307,19 @@ namespace Repositories.Repository
                 responder.Message = "Tài khoản không tồn tại";
                 return responder;
             }
-            await _userManager.AddToRoleAsync(userExist, Role.Staff);
+            if(grade == 1)
+            {
+                await _userManager.AddToRoleAsync(userExist, Role.Staff);
+                await _userManager.RemoveFromRoleAsync(userExist, Role.User);
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(userExist, Role.User);
+                await _userManager.RemoveFromRoleAsync(userExist, Role.Staff);
+            }
+
             responder.IsSussess = true;
-            responder.Message = "Cấp quyền thành công";
+            responder.Message = "Thành công";
             return responder;
         }
 

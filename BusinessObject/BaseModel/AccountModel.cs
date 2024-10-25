@@ -20,6 +20,7 @@ namespace BusinessObject.BaseModel
         public string? Status { get; set; }
         public string? ReturnUrl { get; set; }
         public bool AccountActive { get; set; }
+        public int GrantPermission { get; set; }
     }
 
     public class AccountViewModel : AccountModel

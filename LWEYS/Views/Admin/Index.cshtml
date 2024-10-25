@@ -1,6 +1,8 @@
-﻿@{
+﻿@using System.Globalization
+@{
     Layout = "~/Views/Admin/_AdminLayout.cshtml";
     ViewData["Title"] = "Trang chủ";
+    CultureInfo cul = CultureInfo.GetCultureInfo("vi-VN");
 }
 @model ReportModel
 <div class="row">
@@ -67,7 +69,7 @@
                                 </div>
                                 <div class="text-end pt-1">
                                     <p class="text-sm mb-0 text-capitalize">Tổng doanh thu</p>
-                                    <h4 class="mb-0">@Model.TotalMoney vnđ</h4>
+                                    <h4 class="mb-0">@Model.TotalMoney.ToString("#,###", cul.NumberFormat) vnđ</h4>
                                 </div>
                             </div>
                             <hr class="dark horizontal my-0">

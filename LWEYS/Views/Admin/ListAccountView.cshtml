@@ -35,8 +35,8 @@
                 </div>
             </div>
             <div class="card-body px-0 pb-2">
-                <div class="table-responsive p-0">
-                    <table class="table align-items-center mb-0">
+                <div class="table-responsive p-0" style="padding-left:2rem !important;padding-right:2rem !important">
+                    <table id="myTable" class="table align-items-center mb-0">
                         <thead>
                             <tr>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">#</th>
@@ -91,6 +91,18 @@
                                             </a>
                                         </td>
                                     }
+                                    @if (ViewBag.IsStaff)
+                                    {
+                                        <td class="align-middle">
+                                            <a href="javascript:;" onclick="authRole('@item.UserName',0)" class="text-secondary font-weight-bold text-xs">
+                                                Hủy bỏ quyền nhân viên
+                                            </a>
+                                        </td>
+                                    }
+                                    @if (ViewBag.IsAdmin)
+                                    {
+                                        <td class="align-middle"></td>
+                                    }
 
                                 </tr>
                             }
@@ -102,18 +114,45 @@
         </div>
     </div>
 </div>
+<script src="~/lib/jquery/dist/jquery.js" asp-append-version="true"></script>
+<script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js" asp-append-version="true"></script>
 <script>
     document.getElementById('AccountViewId').classList.add('active');
+    new DataTable('#myTable', {
+        initComplete: function () {
+            this.api()
+                .columns()
+                .every(function () {
+                    let column = this;
+                    let title = column.footer().textContent;
+
+                    // Create input element
+                    let input = document.createElement('input');
+                    input.placeholder = title;
+                    column.footer().replaceChildren(input);
+
+                    // Event listener for user input
+                    input.addEventListener('keyup', () => {
+                        if (column.search() !== this.value) {
+                            column.search(input.value).draw();
+                        }
+                    });
+                });
+        }
+    });
 
     function changeRole(el) {
         var role = $(el).val();
         document.location.href = `/Admin/ListAccountView?role=${role}`;
     }
 
-    function authRole(userName) {
-        if (confirm("Bạn muốn cấp quyền nhân viên cho tài khoản " + userName + " ?") == false) return;
+    function authRole(userName, grant = 1) {
+        let message = "Bạn muốn cấp quyền nhân viên cho tài khoản " + userName + " ?";
+        if (grant == 0) message = "Bạn muốn hủy bỏ quyền nhân viên cho tài khoản " + userName + " ?";
+        if (confirm(message) == false) return;
         var formData = new FormData();
         formData.append('username', userName);
+        formData.append('grant', grant);
         $.ajax(
             {
                 url: `/Admin/GrantAccessRole`,

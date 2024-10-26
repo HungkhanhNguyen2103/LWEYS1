@@ -150,6 +150,12 @@ header {
     }
 }
 
+@media only screen and (max-width: 440px) {
+    .container-1{
+        width:auto !important;
+    }
+}
+
 @media only screen and (max-width: 625px) {
     h3.title {
         margin-left:5rem !important;

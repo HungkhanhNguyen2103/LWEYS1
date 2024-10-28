@@ -179,6 +179,7 @@ namespace Repositories.Repository
                                      : ServicePackage.PremiumPackage,
                 ServiceType = c.Service.ServiceType == ServiceType.Offline ? ServiceTypeCls.Offline : ServiceTypeCls.Online,
                 OrderDate = c.OrderDate.ToString("dd-MM-yyyy HH:mm"),
+                OrderDate2 = c.OrderDate,
                 FullName = LWEYSDbContext.Users.FirstOrDefault(x => x.UserName == c.UserName).FullName,
                 PhoneNumber = LWEYSDbContext.Users.FirstOrDefault(x => x.UserName == c.UserName).PhoneNumber,
                 OrderType = OrderType.ListOrderTypes[(int)c.OrderType],
@@ -186,7 +187,7 @@ namespace Repositories.Repository
                 Price = LWEYSDbContext.ServiceOrderHistories.FirstOrDefault(x => x.ServiceOrderId == c.Id) == null ? 0 : LWEYSDbContext.ServiceOrderHistories.FirstOrDefault(x => x.ServiceOrderId == c.Id).Price
 
             }).ToListAsync();
-            response.DataList = listResult;
+            response.DataList = listResult.OrderByDescending(c => c.OrderDate2).ToList();
             response.IsSussess = true;
             return response;
         }

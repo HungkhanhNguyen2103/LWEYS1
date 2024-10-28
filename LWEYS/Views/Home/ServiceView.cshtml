@@ -18,6 +18,7 @@
             <h3>@item.ServicePackage:</h3>
             <p class="price"><span></span> @item.Amount.ToString("#,###", cul.NumberFormat)<span> VNĐ</span></p>
             <p class="description">@item.Name</p>
+            <button onclick="window.location.href='/Home/ServiceDetailView/@item.Id?info=true'" class="card-button mb-3">Xem thông tin</button>
             <button onclick="window.location.href='/Home/ServiceDetailView/@item.Id'" class="card-button">Đặt lịch</button>
         </div>
     }

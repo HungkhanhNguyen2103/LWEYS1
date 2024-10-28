@@ -113,7 +113,7 @@
                     </div>
                     <label class="mt-2 mb-2">Nội dung:</label>
                     <textarea style="width:100%;border-radius:3px" title="Đánh giá" type="text" class="form-control" rows="6" id="messageRating-id" autofocus></textarea>
-                    <p class="mt-2">Hoặc đánh giá chúng tôi <a href="https://forms.gle/is655UFm7z9CGisb8">tại đây</a></p>
+                    <p class="mt-2">Hoặc đánh giá chúng tôi <a href="#" onclick="redirectForm()">tại đây</a></p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -131,8 +131,35 @@
     </div>
 </section>
 <script>
+    let urlForm = "https://forms.gle/is655UFm7z9CGisb8";
     let paymentId;
     let serviceOrderId;
+
+    function redirectForm(e){
+        //e.preventDefault();
+        let formData = new FormData();
+        formData.append("ServiceOrderId", serviceOrderId);
+        formData.append("Rating", -1);
+        formData.append("Message", "Đánh giá qua form google");
+        $.ajax(
+            {
+                url: `/Home/Feedback`,
+                type: "POST",
+                headers:
+                {
+                    "RequestVerificationToken": '@GetAntiXsrfRequestToken()'
+                },
+                data: formData,
+                //dataType: "json",
+                async: true,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    window.location.href = urlForm;
+                }
+            }
+        );
+    }
 
     function rating(star){
         // console.log(star);

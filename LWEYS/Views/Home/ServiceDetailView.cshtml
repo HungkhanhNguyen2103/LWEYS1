@@ -24,7 +24,7 @@
         </div>
     </form>
 </div>
-<div class="description-1">
+<div id="description-service" class="description-1">
     <span>Mô tả</span>
     @Model.Description
 </div>
@@ -54,4 +54,17 @@
 </section>
 <script>
     document.getElementById('serviceview-cls').classList.add("active");
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const info = urlParams.get('info');
+    if(info === "true"){
+        var el = document.querySelector('#description-service');
+        var rect = el.getBoundingClientRect();
+        var heightFromTop = rect.top + window.scrollY;
+        window.scrollTo({
+            top: heightFromTop,  
+            behavior: 'smooth' 
+        });
+    }
 </script>

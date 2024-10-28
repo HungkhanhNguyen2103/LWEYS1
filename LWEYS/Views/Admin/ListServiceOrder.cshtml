@@ -31,6 +31,7 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Dịch vụ</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Loại dịch vụ</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Đặt lịch</th>
+                                <th class="d-none text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Đặt lịch</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Trạng thái</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Khách hàng</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">SĐT</th>
@@ -50,6 +51,9 @@
                                     </td>
                                     <td>
                                         <p class="mx-3 text-xs font-weight-bold mb-0">@item.OrderDate</p>
+                                    </td>
+                                    <td class="d-none">
+                                        <p class="mx-3 text-xs font-weight-bold mb-0">@item.OrderDate2</p>
                                     </td>
                                     <td class="align-middle">
                                         <span class="text-secondary text-xs font-weight-bold">@item.OrderType</span>
@@ -114,6 +118,11 @@
 <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js" asp-append-version="true"></script>
 <script type="text/javascript">
     new DataTable('#myTable', {
+        order: [[3, 'desc']],
+        columnDefs: [{
+            "targets": 2,
+            "orderable": false
+        }],
         initComplete: function () {
             this.api()
                 .columns()

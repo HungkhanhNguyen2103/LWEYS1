@@ -37,7 +37,7 @@
                                         <p class="mx-3 text-xs font-weight-bold mb-0">@item.UserName</p>
                                     </td>
                                     <td>
-                                        <p class="mx-3 text-xs font-weight-bold mb-0">@item.Rating</p>
+                                        <p class="mx-3 text-xs font-weight-bold mb-0">@(item.Rating != -1 ? item.Rating : "") </p>
                                     </td>
                                     <td class="align-middle">
                                         <span class="text-secondary text-xs font-weight-bold">@item.Message</span>

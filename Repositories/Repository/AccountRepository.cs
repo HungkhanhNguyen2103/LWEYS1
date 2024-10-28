@@ -226,7 +226,12 @@ namespace Repositories.Repository
                     Subject = template.Subject,
                     To = new List<string>() { account.Email }
                 };
-                await _emailSender.SendEmailAsync(emailModel);
+                var rs = await _emailSender.SendEmailAsync(emailModel);
+                if (!rs)
+                {
+                    responder.Message = "Lỗi gửi mail";
+                    return responder;
+                }
                 responder.Message = "Tạo tài khoản thành công";
                 responder.IsSussess = true;
                 return responder;
@@ -359,7 +364,12 @@ namespace Repositories.Repository
                 else responder.Message = "Lỗi máy chủ";
                 return responder;
             }
-            await _emailSender.SendEmailAsync(emailModel);
+            var rs = await _emailSender.SendEmailAsync(emailModel);
+            if (!rs)
+            {
+                responder.Message = "Lỗi gửi mail";
+                return responder;
+            }
             await _userManager.UpdateAsync(userExist);
             responder.IsSussess = true;
             return responder;
@@ -475,7 +485,12 @@ namespace Repositories.Repository
                 Subject = template.Subject,
                 To = new List<string>() { userExist.Email }
             };
-            await _emailSender.SendEmailAsync(emailModel);
+            var rs = await _emailSender.SendEmailAsync(emailModel);
+            if (!rs)
+            {
+                responder.Message = "Lỗi gửi mail";
+                return responder;
+            }
             responder.Message = "Gửi email thành công";
             //responder.Data = token;
             responder.IsSussess = true;

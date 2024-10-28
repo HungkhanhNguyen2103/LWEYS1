@@ -13,6 +13,7 @@ namespace BusinessObject.BaseModel
         public OrderTypeEnum OrderTypeEnum { get; set; }
         public string? OrderType {  get; set; }
         public string? OrderDate { get; set; }
+        public DateTime OrderDate2 { get; set; }
         public string? UserName { get; set; }
         public string? FullName { get; set; }
         public string? PhoneNumber { get; set; }
